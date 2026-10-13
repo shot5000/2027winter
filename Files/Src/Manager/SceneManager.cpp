@@ -2,6 +2,9 @@
 #include <DxLib.h>
 #include "../Common/Fader.h"
 #include "../Scene/TitleScene.h"
+#include "../Scene/GameScene.h"
+#include "../Scene/GameClearScene.h"
+#include "../Scene/GameOverScene.h"
 #include "Camera.h"
 #include "MiniCamera.h"
 #include "SceneManager.h"
@@ -239,6 +242,13 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 		scene_ = new TitleScene();
 		break;
 	case SCENE_ID::GAME:
+		scene_ = new GameScene();
+		break;
+	case SCENE_ID::GAME_CLEAR:
+		scene_ = new GameClearScene();
+		break;
+	case SCENE_ID::GAME_OVER:
+		scene_ = new GameOverScene();
 		break;
 	}
 
