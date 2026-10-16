@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Dirt\DirtManager.cpp" />
+    <ClCompile Include="Src\Object\Dirt\Dirt.cpp" />
     <ClCompile Include="Src\Scene\GameOverScene.cpp" />
     <ClCompile Include="Src\Scene\GameClearScene.cpp" />
     <ClCompile Include="Src\Scene\GameScene.cpp" />
@@ -40,6 +42,8 @@
     <ClCompile Include="Src\Object\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Dirt\DirtManager.h" />
+    <ClInclude Include="Src\Object\Dirt\Dirt.h" />
     <ClInclude Include="Src\Scene\GameOverScene.h" />
     <ClInclude Include="Src\Scene\GameClearScene.h" />
     <ClInclude Include="Src\Scene\GameScene.h" />

@@ -18,6 +18,33 @@ public:
 	static constexpr float VIEW_NEAR = 1.0f;
 	static constexpr float VIEW_FAR = 30000.0f;
 
+	// マウス感度
+	static constexpr float MOUSE_SENSITIVITY = 0.1f * DX_PI_F / 180.0f;
+
+	// 上下の向きの限界角度
+	static constexpr float ANGLE_X_LIMIT = 80.0f * DX_PI_F / 180.0f;
+
+	// 中心計算用
+	static constexpr int CENTER_DIV = 2;
+
+	// 矢印キーで回す1フレームの角度
+	static constexpr float ARROW_ROT_POW = 1.0f * DX_PI_F / 180.0f;
+
+	// 移動方向(カメラから見た前後左右)
+	static constexpr VECTOR DIR_FRONT = { 0.0f, 0.0f, 1.0f };
+	static constexpr VECTOR DIR_BACK = { 0.0f, 0.0f, -1.0f };
+	static constexpr VECTOR DIR_LEFT = { -1.0f, 0.0f, 0.0f };
+	static constexpr VECTOR DIR_RIGHT = { 1.0f, 0.0f, 0.0f };
+
+	// 1秒あたりに進む距離(60FPSで1フレーム3.0fだった速さと同じ)
+	static constexpr float MOVE_SPEED = 180.0f;
+
+	// マイクロ秒を秒に直すための割る数
+	static constexpr float MICRO_SEC_TO_SEC = 1000000.0f;
+
+	// 1フレームの経過時間の上限(秒)。処理が止まった後に急に飛ばないようにする
+	static constexpr float DELTA_TIME_MAX = 0.1f;
+
 	// カメラモード
 	enum class MODE
 	{
@@ -60,6 +87,15 @@ public:
 	// 角度の取得
 	const VECTOR& GetAngles(void) const;
 
+	// マウスでカメラの角度を変える
+	void RotateByMouse(void);
+
+	// マウスカーソルを画面中央に戻す
+	void ResetMousePos(void);
+
+	// 経過時間の更新
+	void UpdateDeltaTime(void);
+
 private:
 
 	// カメラモード
@@ -70,5 +106,11 @@ private:
 
 	// カメラの角度
 	VECTOR angles_;
+
+	// 前フレームの時刻
+	LONGLONG preTime_;
+
+	// 前フレームからの経過時間(秒)
+	float deltaTime_;
 
 };

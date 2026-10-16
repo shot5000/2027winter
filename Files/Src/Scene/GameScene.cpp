@@ -37,6 +37,10 @@ void GameScene::Init(void)
 	player_ = new Player();
 	player_->Init();
 
+	// 汚れの生成
+	dirtManager_ = new DirtManager();
+	dirtManager_->Init();
+
 }
 
 void GameScene::Update(void)
@@ -67,6 +71,8 @@ void GameScene::Update(void)
 	// プレイヤー更新
 	player_->Update();
 
+	// 汚れの掃除(Eの長押し判定)
+	dirtManager_->Update();
 }
 
 void GameScene::Draw(void)
@@ -81,9 +87,15 @@ void GameScene::Draw(void)
 	// プレイヤー描画
 	player_->Draw();
 
+	// 汚れの描画
+	dirtManager_->Draw();
+
 	// 仮の表示
 	DrawString(0, 100, "GameScene", 0xffffff);
 
+	// 照準は最後に描いて、手前に表示する
+	DrawCrosshair();
+	DrawPrompt();
 }
 
 void GameScene::Release(void)
@@ -101,4 +113,43 @@ void GameScene::Release(void)
 	player_->Release();
 	delete player_;
 
+	// 汚れ解放
+	delete dirtManager_;
+
+}
+
+void GameScene::DrawCrosshair(void)
+{
+	// 画面の中心を求める
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int centerX_ = screenW_ / CENTER_DIV;
+	int centerY_ = screenH_ / CENTER_DIV;
+
+	// 中心に塗りつぶしの円(点)を描く
+	DrawCircle(centerX_, centerY_, CROSSHAIR_RADIUS, CROSSHAIR_COLOR, TRUE);
+}
+
+void GameScene::DrawPrompt(void)
+{
+	// 汚れを狙っていないときは出さない
+	if (!dirtManager_->IsAiming())
+	{
+		return;
+	}
+
+	// 画面の中心
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int centerX_ = screenW_ / CENTER_DIV;
+	int centerY_ = screenH_ / CENTER_DIV;
+
+	// 文字の幅を測って、左右中央にそろえる
+	int textW_ = GetDrawStringWidth(PROMPT_TEXT, static_cast<int>(strlen(PROMPT_TEXT)));
+	int drawX_ = centerX_ - textW_ / CENTER_DIV;
+
+	// 照準の少し下に表示
+	DrawString(drawX_, centerY_ + PROMPT_OFFSET_Y, PROMPT_TEXT, PROMPT_COLOR);
 }
