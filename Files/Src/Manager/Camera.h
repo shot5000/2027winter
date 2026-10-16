@@ -43,14 +43,18 @@ public:
 	static constexpr VECTOR DIR_LEFT = { -1.0f, 0.0f, 0.0f };
 	static constexpr VECTOR DIR_RIGHT = { 1.0f, 0.0f, 0.0f };
 
-	// 1秒あたりに進む距離(60FPSで1フレーム3.0fだった速さと同じ)
-	static constexpr float MOVE_SPEED = 180.0f;
+	// 移動速度
+	static constexpr float MOVE_SPEED = 180.0f; // 歩行
+	static constexpr float DASH_SPEED = 360.0f; // ダッシュ
 
 	// マイクロ秒を秒に直すための割る数
 	static constexpr float MICRO_SEC_TO_SEC = 1000000.0f;
 
 	// 1フレームの経過時間の上限(秒)。処理が止まった後に急に飛ばないようにする
 	static constexpr float DELTA_TIME_MAX = 0.1f;
+
+	// ジャンプの初速(1秒あたりに上がる距離)
+	static constexpr float JUMP_SPEED = 450.0f;
 
 	// カメラモード
 	enum class MODE
@@ -102,6 +106,9 @@ public:
 
 	// 経過時間の更新
 	void UpdateDeltaTime(void);
+
+	// ジャンプの入力処理
+	void ProcessJump(void);
 
 private:
 

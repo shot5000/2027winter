@@ -77,6 +77,9 @@ void Camera::SetBeforeDrawFree(void)
 	// キーで水平に移動
 	MoveXYZDirection();
 
+	// ジャンプの入力
+	ProcessJump();
+
 	// 壁・重力・地面の判定
 	body_.Update(pos_, deltaTime_);
 }
@@ -153,8 +156,15 @@ void Camera::MoveXYZDirection(void)
 	moveDir_.y = 0.0f;
 	moveDir_ = VNorm(moveDir_);
 
+	// 左Shiftを押している間はダッシュ
+	float speed_ = MOVE_SPEED;
+	if (ins.IsNew(KEY_INPUT_LSHIFT))
+	{
+		speed_ = DASH_SPEED;
+	}
+
 	// 方向×1秒あたりの速さ×経過時間で、FPSに関係なく同じ距離だけ進む
-	pos_ = VAdd(pos_, VScale(moveDir_, MOVE_SPEED * deltaTime_));
+	pos_ = VAdd(pos_, VScale(moveDir_, speed_ * deltaTime_));
 }
 
 const VECTOR& Camera::GetPos(void) const
@@ -216,5 +226,17 @@ void Camera::UpdateDeltaTime(void)
 	if (deltaTime_ > DELTA_TIME_MAX)
 	{
 		deltaTime_ = DELTA_TIME_MAX;
+	}
+}
+
+void Camera::ProcessJump(void)
+{
+	auto& ins = InputManager::GetInstance();
+
+	// 地面に乗っているときに、スペースを押した瞬間だけジャンプ
+	if (body_.IsGrounded() && ins.IsTrgDown(KEY_INPUT_SPACE))
+	{
+		// 落下速度は下向きが+なので、上に飛ぶときは-にする
+		body_.SetFallSpeed(-JUMP_SPEED);
 	}
 }
