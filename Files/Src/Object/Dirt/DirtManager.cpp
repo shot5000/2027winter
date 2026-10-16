@@ -18,6 +18,9 @@ void DirtManager::Init(void)
 		dirts_.emplace_back(DIRT_POS_LIST[i_]);
 	}
 
+	// 掃除した数を0に戻す
+	cleanCount_ = 0;
+
 	ResetHold();
 
 	// 経過時間の計測を開始
@@ -52,6 +55,7 @@ void DirtManager::Update(void)
 	if (holdTime_ >= CLEAN_TIME)
 	{
 		dirts_.erase(dirts_.begin() + holdIndex_);
+		cleanCount_++;
 		ResetHold();
 	}
 }
@@ -67,6 +71,17 @@ void DirtManager::Draw(void)
 bool DirtManager::IsAiming(void) const
 {
 	return GetAimedIndex() != NO_INDEX;
+}
+
+int DirtManager::GetCleanCount(void) const
+{
+	return cleanCount_;
+}
+
+bool DirtManager::IsAllCleaned(void) const
+{
+	return cleanCount_ >= DIRT_COUNT;
+
 }
 
 int DirtManager::GetAimedIndex(void) const

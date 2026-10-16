@@ -15,7 +15,7 @@ public:
 	static constexpr VECTOR DIRT_POS_LIST[DIRT_COUNT] = {
 		{ 0.0f, 0.0f, -300.0f },
 		{ 300.0f, 0.0f, -100.0f },
-		{ -300.0f, 0.0f, 100.0f },
+		{ -300.0f, 0.0f, 0.0f },
 		{ 500.0f, 0.0f, -400.0f },
 		{ -500.0f, 0.0f, -200.0f },
 	};
@@ -24,7 +24,7 @@ public:
 	static constexpr float CLEAN_DISTANCE = 300.0f;
 
 	// ‘|œ‚É‚©‚©‚é’·‰Ÿ‚µ‚ÌŠÔ(•b)
-	static constexpr float CLEAN_TIME = 1.0f;
+	static constexpr float CLEAN_TIME = 0.5f;
 
 	// ‘_‚Á‚Ä‚¢‚é‰˜‚ê‚ª‚È‚¢‚Æ‚«‚Ì”Ô†
 	static constexpr int NO_INDEX = -1;
@@ -60,6 +60,12 @@ public:
 	// ‰˜‚ê‚ğ‘_‚Á‚Ä‚¢‚é‚©
 	bool IsAiming(void) const;
 
+	// ‘|œ‚µ‚½”‚Ìæ“¾
+	int GetCleanCount(void) const;
+
+	// ‘S•”‘|œ‚µ‚½‚©
+	bool IsAllCleaned(void) const;
+
 private:
 
 	// ‰˜‚ê‚Ì”z—ñ
@@ -76,6 +82,9 @@ private:
 
 	// ‘OƒtƒŒ[ƒ€‚©‚ç‚ÌŒo‰ßŠÔ(•b)
 	float deltaTime_;
+
+	// ‘|œ‚µ‚½”
+	int cleanCount_;
 
 	// ‘_‚Á‚Ä‚¢‚é‰˜‚ê‚Ì”Ô†‚ğ•Ô‚·(‚È‚¯‚ê‚ÎNO_INDEX)
 	int GetAimedIndex(void) const;

@@ -71,8 +71,15 @@ void GameScene::Update(void)
 	// プレイヤー更新
 	player_->Update();
 
-	// 汚れの掃除(Eの長押し判定)
+	// 汚れの掃除
 	dirtManager_->Update();
+
+	// 全部掃除したら、ゲームクリアへ
+	if (dirtManager_->IsAllCleaned() && !isClear_)
+	{
+		isClear_ = true;
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_CLEAR);
+	}
 }
 
 void GameScene::Draw(void)
@@ -92,6 +99,9 @@ void GameScene::Draw(void)
 
 	// 仮の表示
 	DrawString(0, 100, "GameScene", 0xffffff);
+
+	// 掃除した数の表示
+	DrawCleanCount();
 
 	// 照準は最後に描いて、手前に表示する
 	DrawCrosshair();
@@ -152,4 +162,19 @@ void GameScene::DrawPrompt(void)
 
 	// 照準の少し下に表示
 	DrawString(drawX_, centerY_ + PROMPT_OFFSET_Y, PROMPT_TEXT, PROMPT_COLOR);
+}
+
+void GameScene::DrawCleanCount(void)
+{
+	// 画面左の、縦の真ん中に出す
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int posY_ = screenH_ / CENTER_DIV;
+
+	DrawFormatString(
+		COUNT_POS_X, posY_, COUNT_COLOR,
+		COUNT_TEXT,
+		dirtManager_->GetCleanCount(), DirtManager::DIRT_COUNT
+	);
 }

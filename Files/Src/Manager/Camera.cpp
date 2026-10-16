@@ -102,8 +102,6 @@ void Camera::DrawDebug(void)
 		AsoUtility::Rad2DegF(angles_.y),
 		AsoUtility::Rad2DegF(angles_.z)
 	);
-
-	DrawFormatString(0, 100, 0xffffff, "FPSÅF%.1f", GetFPS());
 }
 
 void Camera::Release(void)

@@ -26,6 +26,13 @@ public:
 	// 操作表示を照準からどれだけ下に出すか
 	static constexpr int PROMPT_OFFSET_Y = 40;
 
+	// 掃除した数の表示
+	static constexpr const char* COUNT_TEXT = "掃除した数 %d/ %d";
+	static constexpr unsigned int COUNT_COLOR = 0xffffff;
+
+	// 掃除した数を出す、画面左端からの距離
+	static constexpr int COUNT_POS_X = 20;
+
 	// コンストラクタ
 	GameScene(void);
 
@@ -43,10 +50,16 @@ public:
 	// 操作表示の描画
 	void DrawPrompt(void);
 
+	// 掃除した数の描画
+	void DrawCleanCount(void);
+
 private:
 
 	// 汚れの管理
 	DirtManager* dirtManager_;
+
+	// ゲームクリアへの移行を始めたか
+	bool isClear_;
 
 	// グリッド線
 	Grid* grid_;
