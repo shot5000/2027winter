@@ -1,4 +1,5 @@
 #pragma once
+#include "../Object/Collision/BodyCollision.h"
 #include <DxLib.h>
 
 class Camera
@@ -9,6 +10,12 @@ public:
 	// カメラの初期座標
 	static constexpr VECTOR DERFAULT_POS = { 0.0f, 200.0f, -500.0f };
 	
+	// 当たり判定の体の形(基準は目の位置)
+	static constexpr float CAPSULE_RADIUS = 30.0f;
+	static constexpr float CAPSULE_TOP_Y = 0.0f;
+	static constexpr float CAPSULE_DOWN_Y = -60.0f;
+	static constexpr float FOOT_Y = -110.0f;
+
 	// カメラの初期角度
 	static constexpr VECTOR DERFAULT_ANGLES = {
 	30.0f * DX_PI_F / 180.0f, 0.0f, 0.0f
@@ -112,5 +119,8 @@ private:
 
 	// 前フレームからの経過時間(秒)
 	float deltaTime_;
+
+	// 当たり判定
+	BodyCollision body_;
 
 };

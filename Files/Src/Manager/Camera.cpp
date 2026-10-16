@@ -26,6 +26,12 @@ void Camera::Init(void)
 	// 経過時間の計測を開始
 	preTime_ = GetNowHiPerformanceCount();
 	deltaTime_ = 0.0f;
+
+	// 当たり判定の体の形を決める
+	BodyCollision::PARAM param_ = {
+		CAPSULE_RADIUS, CAPSULE_TOP_Y, CAPSULE_DOWN_Y, FOOT_Y
+	};
+	body_.Init(param_);
 }
 
 void Camera::Update(void)
@@ -62,29 +68,17 @@ void Camera::SetBeforeDrawFixedPoint(void)
 
 void Camera::SetBeforeDrawFree(void)
 {
-	auto& ins = InputManager::GetInstance();
-
-	//// 矢印キーでカメラの角度を変える
-	//float rotPow = 1.0f * DX_PI_F / 180.0f;
-	//if (ins.IsNew(KEY_INPUT_DOWN)) { angles_.x += rotPow; }
-	//if (ins.IsNew(KEY_INPUT_UP)) { angles_.x -= rotPow; }
-	//if (ins.IsNew(KEY_INPUT_RIGHT)) { angles_.y += rotPow; }
-	//if (ins.IsNew(KEY_INPUT_LEFT)) { angles_.y -= rotPow; }
-
-	//// WASDでカメラを移動させる
-	//float movePow = 3.0f;
-	//if (ins.IsNew(KEY_INPUT_W)) { pos_.z += movePow; }
-	//if (ins.IsNew(KEY_INPUT_A)) { pos_.x -= movePow; }
-	//if (ins.IsNew(KEY_INPUT_S)) { pos_.z -= movePow; }
-	//if (ins.IsNew(KEY_INPUT_D)) { pos_.x += movePow; }
-	//if (ins.IsNew(KEY_INPUT_Q)) { pos_.y += movePow; }
-	//if (ins.IsNew(KEY_INPUT_E)) { pos_.y -= movePow; }
+	// 経過時間の更新(移動と重力の両方で使う)
+	UpdateDeltaTime();
 
 	// マウスで向きを変える
 	RotateByMouse();
 
-	// カメラの方向移動
+	// キーで水平に移動
 	MoveXYZDirection();
+
+	// 壁・重力・地面の判定
+	body_.Update(pos_, deltaTime_);
 }
 
 void Camera::DrawDebug(void)
@@ -130,9 +124,6 @@ void Camera::ChangeMode(MODE mode)
 
 void Camera::MoveXYZDirection(void)
 {
-	// キー入力がなくても毎フレーム時間は更新しておく
-	UpdateDeltaTime();
-
 	auto& ins = InputManager::GetInstance();
 
 	// 矢印キーでカメラの角度を変える

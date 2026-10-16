@@ -20,7 +20,6 @@ GameScene::~GameScene(void)
 
 void GameScene::Init(void)
 {
-
 	// カメラモード変更
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 	camera_->ChangeMode(Camera::MODE::FREE);
@@ -41,6 +40,8 @@ void GameScene::Init(void)
 	dirtManager_ = new DirtManager();
 	dirtManager_->Init();
 
+	// 当たり判定にステージのモデルを教える(カメラも敵も共通)
+	BodyCollision::SetStageModel(stage_->GetModelId());
 }
 
 void GameScene::Update(void)
@@ -110,7 +111,6 @@ void GameScene::Draw(void)
 
 void GameScene::Release(void)
 {
-
 	// グリッド解放
 	grid_->Release();
 	delete grid_;
@@ -126,6 +126,8 @@ void GameScene::Release(void)
 	// 汚れ解放
 	delete dirtManager_;
 
+	// ステージを消す前に、当たり判定から外す
+	BodyCollision::SetStageModel(BodyCollision::NO_MODEL);
 }
 
 void GameScene::DrawCrosshair(void)
