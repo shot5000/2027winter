@@ -1,5 +1,6 @@
 #include <DxLib.h>
 #include "Manager/InputManager.h"
+#include "Manager/ResourceManager.h"
 #include "Manager/SceneManager.h"
 #include "Application.h"
 
@@ -54,6 +55,10 @@ void Application::Init(void)
 	SetUseDirectInputFlag(true);
 	InputManager::CreateInstance();
 
+	// リソース管理初期化(シーンが読み込みを始める前に作っておく)
+	ResourceManager::CreateInstance();
+	ResourceManager::GetInstance().Init();
+
 	// シーン管理初期化
 	SceneManager::CreateInstance();
 
@@ -85,6 +90,9 @@ void Application::Destroy(void)
 
 	// シーン管理解放
 	SceneManager::GetInstance().Destroy();
+
+	// リソース解放(シーンが消えたあとに、モデルなどを消す)
+	ResourceManager::DeleteInstance();
 
 	// 入力制御解放
 	InputManager::GetInstance().Destroy();

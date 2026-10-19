@@ -9,6 +9,7 @@ Camera::Camera(void)
 	// 注視点の位置は x = 320.0f, y = 240.0f, z = 1.0f
 	// カメラの上方向は x = 0.0f, y = 1.0f, z = 0.0f
 	// 右上位置からZ軸のプラス方向を見るようなカメラ
+	mode_ = MODE::NONE;
 }
 
 Camera::~Camera(void)
@@ -17,21 +18,7 @@ Camera::~Camera(void)
 
 void Camera::Init(void)
 {
-	// カメラの初期位置
-	pos_ = DERFAULT_POS;
-
-	// カメラの初期角度
-	angles_ = DERFAULT_ANGLES;
-
-	// 経過時間の計測を開始
-	preTime_ = GetNowHiPerformanceCount();
-	deltaTime_ = 0.0f;
-
-	// 当たり判定の体の形を決める
-	BodyCollision::PARAM param_ = {
-		CAPSULE_RADIUS, CAPSULE_TOP_Y, CAPSULE_DOWN_Y, FOOT_Y
-	};
-	body_.Init(param_);
+	ResetState();
 }
 
 void Camera::Update(void)
@@ -239,4 +226,26 @@ void Camera::ProcessJump(void)
 		// 落下速度は下向きが+なので、上に飛ぶときは-にする
 		body_.SetFallSpeed(-JUMP_SPEED);
 	}
+}
+
+void Camera::ResetState(void)
+{
+	// 位置と角度を最初に戻す
+	pos_ = DERFAULT_POS;
+	angles_ = DERFAULT_ANGLES;
+
+	// 当たり判定(落下速度など)も最初に戻す
+	BodyCollision::PARAM param_ = {
+		CAPSULE_RADIUS, CAPSULE_TOP_Y, CAPSULE_DOWN_Y, FOOT_Y
+	};
+	body_.Init(param_);
+
+	// 経過時間の計測もやり直す(長く測っていないと、最初の1フレームが大きくなる)
+	preTime_ = GetNowHiPerformanceCount();
+	deltaTime_ = 0.0f;
+}
+
+const BodyCollision& Camera::GetBody(void) const
+{
+	return body_;
 }

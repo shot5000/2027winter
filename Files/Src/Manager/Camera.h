@@ -110,6 +110,12 @@ public:
 	// ジャンプの入力処理
 	void ProcessJump(void);
 
+	// 位置・角度・当たり判定の状態を最初に戻す
+	void ResetState(void);
+
+	// 当たり判定の取得(敵との接触判定で使う)
+	const BodyCollision& GetBody(void) const;
+
 private:
 
 	// カメラモード

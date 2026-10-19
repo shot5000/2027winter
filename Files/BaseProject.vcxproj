@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Manager\Resource.cpp" />
+    <ClCompile Include="Src\Manager\ResourceManager.cpp" />
+    <ClCompile Include="Src\Object\Enemy\EnemyBase.cpp" />
+    <ClCompile Include="Src\Object\Enemy\EnemyGhost.cpp" />
+    <ClCompile Include="Src\Manager\EnemyManager.cpp" />
     <ClCompile Include="Src\Object\Collision\BodyCollision.cpp" />
     <ClCompile Include="Src\Object\Dirt\DirtManager.cpp" />
     <ClCompile Include="Src\Object\Dirt\Dirt.cpp" />
@@ -43,6 +48,11 @@
     <ClCompile Include="Src\Object\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Manager\Resource.h" />
+    <ClInclude Include="Src\Manager\ResourceManager.h" />
+    <ClInclude Include="Src\Object\Enemy\EnemyBase.h" />
+    <ClInclude Include="Src\Object\Enemy\EnemyGhost.h" />
+    <ClInclude Include="Src\Manager\EnemyManager.h" />
     <ClInclude Include="Src\Object\Collision\BodyCollision.h" />
     <ClInclude Include="Src\Object\Dirt\DirtManager.h" />
     <ClInclude Include="Src\Object\Dirt\Dirt.h" />

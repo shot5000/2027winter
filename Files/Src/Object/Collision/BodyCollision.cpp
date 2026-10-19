@@ -33,6 +33,12 @@ void BodyCollision::SetStageModel(int modelId)
 
 void BodyCollision::Update(VECTOR& pos, float deltaTime)
 {
+	// ステージがないときは、何もしない(落ち続けるのを防ぐ)
+	if (stageModelId_ == NO_MODEL)
+	{
+		return;
+	}
+
 	// まず壁から押し戻す
 	CollisionWall(pos);
 

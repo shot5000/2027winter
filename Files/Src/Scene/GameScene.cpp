@@ -12,6 +12,9 @@ GameScene::GameScene(void) : SceneBase()
 	grid_ = nullptr;
 	stage_ = nullptr;
 	player_ = nullptr;
+	dirtManager_ = nullptr;
+	isClear_ = false;
+	enemyManager_ = nullptr;
 }
 
 GameScene::~GameScene(void)
@@ -20,9 +23,14 @@ GameScene::~GameScene(void)
 
 void GameScene::Init(void)
 {
+	// クリアへの移行をまだ始めていない状態にする
+	isClear_ = false;
+
 	// カメラモード変更
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 	camera_->ChangeMode(Camera::MODE::FREE);
+	// カメラを最初の位置に戻す(前のゲームの位置を引き継がない)
+	camera_->ResetState();
 
 	// グリッド初期化
 	grid_ = new Grid();
@@ -39,6 +47,10 @@ void GameScene::Init(void)
 	// 汚れの生成
 	dirtManager_ = new DirtManager();
 	dirtManager_->Init();
+
+	// 敵の生成
+	enemyManager_ = new EnemyManager();
+	enemyManager_->Init();
 
 	// 当たり判定にステージのモデルを教える(カメラも敵も共通)
 	BodyCollision::SetStageModel(stage_->GetModelId());
@@ -75,6 +87,17 @@ void GameScene::Update(void)
 	// 汚れの掃除
 	dirtManager_->Update();
 
+	// 敵の更新
+	enemyManager_->Update();
+
+	// 敵に触れたら、ゲームオーバーへ
+	Camera* camera_ = SceneManager::GetInstance().GetCamera();
+	if (enemyManager_->IsHitPlayer(camera_->GetBody(), camera_->GetPos()))
+	{
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_OVER);
+		return;
+	}
+
 	// 全部掃除したら、ゲームクリアへ
 	if (dirtManager_->IsAllCleaned() && !isClear_)
 	{
@@ -97,6 +120,9 @@ void GameScene::Draw(void)
 
 	// 汚れの描画
 	dirtManager_->Draw();
+
+	// 敵の描画
+	enemyManager_->Draw();
 
 	// 仮の表示
 	DrawString(0, 100, "GameScene", 0xffffff);
@@ -126,8 +152,15 @@ void GameScene::Release(void)
 	// 汚れ解放
 	delete dirtManager_;
 
+	// 敵解放
+	enemyManager_->Release();
+	delete enemyManager_;
+
 	// ステージを消す前に、当たり判定から外す
 	BodyCollision::SetStageModel(BodyCollision::NO_MODEL);
+
+	// ゲームシーンの外では、カメラを自由に動かさない
+	SceneManager::GetInstance().GetCamera()->ChangeMode(Camera::MODE::FIXED_POINT);
 }
 
 void GameScene::DrawCrosshair(void)

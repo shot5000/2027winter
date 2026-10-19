@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneBase.h"
 #include "../Object/Dirt/DirtManager.h"
+#include "../Manager/EnemyManager.h"
 class Grid;
 class Stage;
 class Player;
@@ -54,6 +55,9 @@ public:
 	void DrawCleanCount(void);
 
 private:
+
+	// “G‚ÌŠÇ—
+	EnemyManager* enemyManager_;
 
 	// ‰˜‚ê‚ÌŠÇ—
 	DirtManager* dirtManager_;
