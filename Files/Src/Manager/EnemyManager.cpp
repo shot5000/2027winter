@@ -15,7 +15,8 @@ void EnemyManager::Init(void)
 	enemies_.clear();
 	for (int i_ = 0; i_ < GHOST_COUNT; i_++)
 	{
-		enemies_.push_back(std::make_unique<EnemyGhost>(GHOST_POS_LIST[i_]));
+		enemies_.push_back(std::make_unique<EnemyGhost>(
+			GHOST_POS_LIST[i_], GHOST_ANGLE_LIST[i_]));
 	}
 
 	// それぞれの初期化
@@ -25,11 +26,11 @@ void EnemyManager::Init(void)
 	}
 }
 
-void EnemyManager::Update(void)
+void EnemyManager::Update(const VECTOR& targetPos)
 {
 	for (auto& enemy_ : enemies_)
 	{
-		enemy_->Update();
+		enemy_->Update(targetPos);
 	}
 }
 
@@ -38,6 +39,15 @@ void EnemyManager::Draw(void)
 	for (auto& enemy_ : enemies_)
 	{
 		enemy_->Draw();
+	}
+
+	// 当たり判定の表示(モデルの上に重ねたいので、あとから描く)
+	if (DEBUG_DRAW)
+	{
+		for (auto& enemy_ : enemies_)
+		{
+			enemy_->DrawDebug();
+		}
 	}
 }
 

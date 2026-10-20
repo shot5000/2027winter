@@ -87,22 +87,23 @@ void GameScene::Update(void)
 	// ‰˜‚ê‚Ì‘|œ
 	dirtManager_->Update();
 
-	// “G‚ÌXV
-	enemyManager_->Update();
-
-	// “G‚ÉG‚ê‚½‚çAƒQ[ƒ€ƒI[ƒo[‚Ö
-	Camera* camera_ = SceneManager::GetInstance().GetCamera();
-	if (enemyManager_->IsHitPlayer(camera_->GetBody(), camera_->GetPos()))
-	{
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_OVER);
-		return;
-	}
-
 	// ‘S•”‘|œ‚µ‚½‚çAƒQ[ƒ€ƒNƒŠƒA‚Ö
 	if (dirtManager_->IsAllCleaned() && !isClear_)
 	{
 		isClear_ = true;
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_CLEAR);
+		return;
+	}
+
+	// “G‚ÌXV(ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ð“n‚·)
+	Camera* camera_ = SceneManager::GetInstance().GetCamera();
+	enemyManager_->Update(camera_->GetPos());
+
+	// “G‚ÉG‚ê‚½‚çAƒQ[ƒ€ƒI[ƒo[‚Ö
+	if (enemyManager_->IsHitPlayer(camera_->GetBody(), camera_->GetPos()))
+	{
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_OVER);
+		return;
 	}
 }
 

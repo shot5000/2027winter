@@ -40,13 +40,13 @@ public:
 	// 壁から離れる位置の余裕(ぴったりだと、触れているかの判定が毎回ぶれる)
 	static constexpr float PUSH_MARGIN = 0.1f;
 
-	// 体の形(基準座標からの高さで指定。上が+、下が-)
+	// 体の形(基準座標からのずれで指定する)
 	struct PARAM
 	{
-		float radius_;	// カプセルの半径
-		float topY_;	// カプセルの上の球の中心
-		float downY_;	// カプセルの下の球の中心
-		float footY_;	// 足元(地面に接する高さ)
+		float radius_;		// カプセルの半径
+		VECTOR topOffset_;	// 基準座標から、カプセルの一方の端(球の中心)まで
+		VECTOR downOffset_;	// 基準座標から、もう一方の端(球の中心)まで
+		float footY_;		// 足元(地面に接する高さ)
 	};
 
 	// コンストラクタ
@@ -89,6 +89,9 @@ public:
 	// デバッグ用にカプセルを描く
 	void DrawDebug(const VECTOR& pos) const;
 
+	// 体の向きを設定(Y軸の角度。カプセルの両端のずれを、この角度で回す)
+	void SetAngleY(float angleY);
+
 private:
 
 	// ステージのモデルのハンドルID(全員で共有)
@@ -105,6 +108,15 @@ private:
 
 	// 地面に乗っているか
 	bool isGrounded_;
+
+	// 体の向き(Y軸の角度)
+	float angleY_;
+
+	// カプセルの両端のうち、低いほうの高さ(基準座標からのずれ)
+	float GetLowestOffsetY(void) const;
+
+	// 基準座標からのずれを、体の向きに合わせて回す
+	VECTOR RotateOffset(const VECTOR& offset) const;
 
 	// 壁との衝突(カプセル)
 	void CollisionWall(VECTOR& pos);

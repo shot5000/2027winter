@@ -234,9 +234,12 @@ void Camera::ResetState(void)
 	pos_ = DERFAULT_POS;
 	angles_ = DERFAULT_ANGLES;
 
-	// “–‚½‚è”»’è(—Ž‰º‘¬“x‚È‚Ç)‚àÅ‰‚É–ß‚·
+	// “–‚½‚è”»’è‚Ì‘Ì‚ÌŒ`‚ðŒˆ‚ß‚é(cŒü‚«)
 	BodyCollision::PARAM param_ = {
-		CAPSULE_RADIUS, CAPSULE_TOP_Y, CAPSULE_DOWN_Y, FOOT_Y
+		CAPSULE_RADIUS,
+		VGet(0.0f, CAPSULE_TOP_Y, 0.0f),
+		VGet(0.0f, CAPSULE_DOWN_Y, 0.0f),
+		FOOT_Y
 	};
 	body_.Init(param_);
 

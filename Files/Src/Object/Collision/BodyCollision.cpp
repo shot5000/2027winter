@@ -8,7 +8,7 @@ int BodyCollision::stageModelId_ = BodyCollision::NO_MODEL;
 
 BodyCollision::BodyCollision(void)
 {
-	param_ = { 0.0f, 0.0f, 0.0f, 0.0f };
+	param_ = { 0.0f, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, 0.0f };
 	fallSpeed_ = 0.0f;
 	isGravity_ = true;
 	isGrounded_ = false;
@@ -24,6 +24,7 @@ void BodyCollision::Init(const PARAM& param)
 	fallSpeed_ = 0.0f;
 	isGravity_ = true;
 	isGrounded_ = false;
+	angleY_ = 0.0f;
 }
 
 void BodyCollision::SetStageModel(int modelId)
@@ -72,16 +73,12 @@ bool BodyCollision::IsGrounded(void) const
 
 VECTOR BodyCollision::GetCapsuleTop(const VECTOR& pos) const
 {
-	VECTOR top_ = pos;
-	top_.y += param_.topY_;
-	return top_;
+	return VAdd(pos, RotateOffset(param_.topOffset_));
 }
 
 VECTOR BodyCollision::GetCapsuleDown(const VECTOR& pos) const
 {
-	VECTOR down_ = pos;
-	down_.y += param_.downY_;
-	return down_;
+	return VAdd(pos, RotateOffset(param_.downOffset_));
 }
 
 float BodyCollision::GetRadius(void) const
@@ -102,9 +99,37 @@ bool BodyCollision::IsHit(
 
 void BodyCollision::DrawDebug(const VECTOR& pos) const
 {
+	// モデルの中や後ろでも見えるように、ライトとZバッファを切って描く
+	SetUseLighting(FALSE);
+	SetUseZBuffer3D(FALSE);
+
 	DrawCapsule3D(
 		GetCapsuleTop(pos), GetCapsuleDown(pos), param_.radius_,
 		DEBUG_DIV_NUM, DEBUG_COLOR, DEBUG_COLOR, FALSE);
+
+	// 元に戻す
+	SetUseLighting(TRUE);
+	SetUseZBuffer3D(TRUE);
+}
+
+void BodyCollision::SetAngleY(float angleY)
+{
+	angleY_ = angleY;
+}
+
+float BodyCollision::GetLowestOffsetY(void) const
+{
+	if (param_.topOffset_.y < param_.downOffset_.y)
+	{
+		return param_.topOffset_.y;
+	}
+	return param_.downOffset_.y;
+}
+
+VECTOR BodyCollision::RotateOffset(const VECTOR& offset) const
+{
+	// Y軸の回転(モデルや扇と同じ向き)
+	return VTransform(offset, MGetRotY(angleY_));
 }
 
 void BodyCollision::CollisionWall(VECTOR& pos)
@@ -223,9 +248,8 @@ void BodyCollision::CollisionGround(VECTOR& pos)
 	}
 
 	// カプセルの一番下から、足元の少し下まで線を引く
-	// (これより低い段差は上れて、高いものは壁として止まる)
 	VECTOR start_ = pos;
-	start_.y += param_.downY_ - param_.radius_;
+	start_.y += GetLowestOffsetY() - param_.radius_;
 	VECTOR end_ = pos;
 	end_.y += param_.footY_ - GROUND_MARGIN;
 
