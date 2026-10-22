@@ -62,6 +62,8 @@ void Application::Init(void)
 	// シーン管理初期化
 	SceneManager::CreateInstance();
 
+	isExit_ = false;
+
 }
 
 void Application::Run(void)
@@ -71,7 +73,7 @@ void Application::Run(void)
 	SceneManager& sceneManager = SceneManager::GetInstance();
 
 	// ゲームループ
-	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
+	while (ProcessMessage() == 0 && !isExit_)
 	{
 
 		inputManager.Update();
@@ -116,6 +118,11 @@ bool Application::IsInitFail(void) const
 bool Application::IsReleaseFail(void) const
 {
 	return isReleaseFail_;
+}
+
+void Application::Exit(void)
+{
+	isExit_ = true;
 }
 
 Application::Application(void)
