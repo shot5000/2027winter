@@ -7,7 +7,7 @@
 #include "../Object/Player.h"
 #include "GameScene.h"
 
-GameScene::GameScene(void) : SceneBase()
+GameScene::GameScene(void) : SceneBase(), backMenu_(BACK_TEXT)
 {
 	grid_ = nullptr;
 	stage_ = nullptr;
@@ -60,6 +60,23 @@ void GameScene::Update(void)
 {
 
 	InputManager& input_ = InputManager::GetInstance();
+
+	// 確認の選択肢が出ている間は、ゲームを止めて、選択肢だけ動かす
+	if (backMenu_.IsOpen())
+	{
+		UpdateBackMenu();
+		return;
+	}
+
+	// ESCキーで、タイトルに戻るかの確認を出す
+	if (input_.IsTrgDown(KEY_INPUT_ESCAPE))
+	{
+		backMenu_.Open();
+
+		// カメラの操作を止めて、マウスカーソルを表示する
+		SceneManager::GetInstance().GetCamera()->ChangeMode(Camera::MODE::FIXED_POINT);
+		return;
+	}
 
 	// Zキーでクリアへ
 	if (input_.IsTrgDown(KEY_INPUT_Z))
@@ -131,9 +148,15 @@ void GameScene::Draw(void)
 	// 掃除した数の表示
 	DrawCleanCount();
 
-	// 照準は最後に描いて、手前に表示する
-	DrawCrosshair();
-	DrawPrompt();
+	// 照準と操作表示は、ゲームが動いているときだけ(最後に描いて手前に出す)
+	if (!backMenu_.IsOpen())
+	{
+		DrawCrosshair();
+		DrawPrompt();
+	}
+
+	// 確認の選択肢(出ているときだけ描かれる。いちばん手前)
+	backMenu_.Draw();
 }
 
 void GameScene::Release(void)
@@ -213,4 +236,21 @@ void GameScene::DrawCleanCount(void)
 		COUNT_TEXT,
 		dirtManager_->GetCleanCount(), DirtManager::DIRT_COUNT
 	);
+}
+
+void GameScene::UpdateBackMenu(void)
+{
+	switch (backMenu_.Update())
+	{
+	case PauseScene::RESULT::YES:
+		// タイトルへ
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
+		break;
+	case PauseScene::RESULT::NO:
+		// ゲームに戻る(カメラの操作を再開する)
+		SceneManager::GetInstance().GetCamera()->ChangeMode(Camera::MODE::FREE);
+		break;
+	default:
+		break;
+	}
 }

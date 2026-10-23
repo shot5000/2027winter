@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneBase.h"
+#include "PauseScene.h"
 #include "../Object/Dirt/DirtManager.h"
 #include "../Manager/EnemyManager.h"
 class Grid;
@@ -33,6 +34,9 @@ public:
 
 	// 掃除した数を出す、画面左端からの距離
 	static constexpr int COUNT_POS_X = 20;
+
+	// タイトルに戻る確認の文字
+	static constexpr const char* BACK_TEXT = "タイトルに戻りますか？";
 
 	// コンストラクタ
 	GameScene(void);
@@ -73,5 +77,11 @@ private:
 
 	// プレイヤー
 	Player* player_;
+
+	// タイトルに戻る確認の選択肢
+	PauseScene backMenu_;
+
+	// 確認の選択肢の更新
+	void UpdateBackMenu(void);
 
 };
