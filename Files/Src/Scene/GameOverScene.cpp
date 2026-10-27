@@ -31,6 +31,8 @@ void GameOverScene::Draw(void)
 {
 	// 仮の表示
 	DrawString(0, 100, "GameOverScene", 0xffffff);
+
+	DrawString(0, 130, "SPACE：タイトル画面", 0xffffff);
 }
 
 void GameOverScene::Release(void)

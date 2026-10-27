@@ -6,7 +6,6 @@
 #include "../Scene/GameClearScene.h"
 #include "../Scene/GameOverScene.h"
 #include "Camera.h"
-#include "MiniCamera.h"
 #include "SceneManager.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -41,9 +40,6 @@ void SceneManager::Init(void)
 
 	scene_ = new TitleScene();
 	scene_->Init();
-
-	miniCamera_ = new MiniCamera(camera_);
-	miniCamera_->Init();
 
 	isSceneChanging_ = false;
 
@@ -113,16 +109,11 @@ void SceneManager::Update(void)
 
 	// カメラ更新
 	camera_->Update();
-
-	// ミニカメラ
-	miniCamera_->Update();
 	
 }
 
 void SceneManager::Draw(void)
 {
-	
-	miniCamera_->DrawScreen();
 
 	// 描画先グラフィック領域の指定
 	// (３Ｄ描画で使用するカメラの設定などがリセットされる)
@@ -139,9 +130,6 @@ void SceneManager::Draw(void)
 
 	// カメラ描画
 	camera_->DrawDebug();
-
-	// ミニカメラ
-	miniCamera_->Draw();
 
 	// 暗転・明転
 	fader_->Draw();
@@ -160,9 +148,6 @@ void SceneManager::Destroy(void)
 
 	camera_->Release();
 	delete camera_;
-
-	miniCamera_->Release();
-	delete miniCamera_;
 
 	// インスタンスのメモリ解放
 	delete instance_;
@@ -213,7 +198,6 @@ SceneManager::SceneManager(void)
 	deltaTime_ = 1.0f / 60.0f;
 
 	camera_ = nullptr;
-	miniCamera_ = nullptr;
 
 }
 

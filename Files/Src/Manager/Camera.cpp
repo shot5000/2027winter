@@ -73,19 +73,19 @@ void Camera::SetBeforeDrawFree(void)
 
 void Camera::DrawDebug(void)
 {
-	DrawFormatString(
-		0, 10, 0xffffff,
-		"カメラ座標　 ：(% .1f, % .1f, % .1f)",
-		pos_.x, pos_.y, pos_.z
-	);
+	//DrawFormatString(
+	//	0, 10, 0xffffff,
+	//	"カメラ座標　 ：(% .1f, % .1f, % .1f)",
+	//	pos_.x, pos_.y, pos_.z
+	//);
 
-	DrawFormatString(
-		0, 30, 0xffffff,
-		"カメラ角度　 ：(% .1f, % .1f, % .1f)",
-		AsoUtility::Rad2DegF(angles_.x),
-		AsoUtility::Rad2DegF(angles_.y),
-		AsoUtility::Rad2DegF(angles_.z)
-	);
+	//DrawFormatString(
+	//	0, 30, 0xffffff,
+	//	"カメラ角度　 ：(% .1f, % .1f, % .1f)",
+	//	AsoUtility::Rad2DegF(angles_.x),
+	//	AsoUtility::Rad2DegF(angles_.y),
+	//	AsoUtility::Rad2DegF(angles_.z)
+	//);
 }
 
 void Camera::Release(void)

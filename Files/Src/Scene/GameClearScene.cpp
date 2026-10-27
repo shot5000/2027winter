@@ -31,6 +31,8 @@ void GameClearScene::Draw(void)
 {
 	// 仮の表示
 	DrawString(0, 100, "GameClearScene", 0xffffff);
+
+	DrawString(0, 130, "SPACE：タイトル画面", 0xffffff);
 }
 
 void GameClearScene::Release(void)

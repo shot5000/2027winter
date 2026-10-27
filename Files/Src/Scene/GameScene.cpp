@@ -231,8 +231,10 @@ void GameScene::DrawCleanCount(void)
 	GetDrawScreenSize(&screenW_, &screenH_);
 	int posY_ = screenH_ / CENTER_DIV;
 
+	DrawString(0, 130, "ESC：タイトル画面", 0xffffff);
+
 	DrawFormatString(
-		COUNT_POS_X, posY_, COUNT_COLOR,
+		0, 160, COUNT_COLOR,
 		COUNT_TEXT,
 		dirtManager_->GetCleanCount(), DirtManager::DIRT_COUNT
 	);
