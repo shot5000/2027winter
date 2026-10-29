@@ -23,11 +23,11 @@ public:
 	static constexpr int CENTER_DIV = 2;
 
 	// 操作表示の文字と色
-	static constexpr const char* PROMPT_TEXT = "E長押し";
+	static constexpr const char* PROMPT_TEXT = "掃除する \n\n E長押し";
 	static constexpr unsigned int PROMPT_COLOR = 0xffffff;
 
 	// 操作表示を照準からどれだけ下に出すか
-	static constexpr int PROMPT_OFFSET_Y = 40;
+	static constexpr int PROMPT_OFFSET_Y = 20;
 
 	// 掃除した数の表示
 	static constexpr const char* COUNT_TEXT = "掃除した数 %d/ %d";
