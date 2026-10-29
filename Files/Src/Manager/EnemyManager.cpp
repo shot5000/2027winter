@@ -1,3 +1,5 @@
+#include <algorithm>
+#include "AttackManager.h"
 #include "../Object/Enemy/EnemyGhost.h"
 #include "EnemyManager.h"
 
@@ -71,4 +73,40 @@ bool EnemyManager::IsHitPlayer(
 		}
 	}
 	return false;
+}
+
+void EnemyManager::DefeatHitEnemies(const AttackManager& attackManager)
+{
+	// UŒ‚‚É“–‚½‚Á‚Ä‚¢‚é“G‚ğA“|‚·
+	for (auto& enemy_ : enemies_)
+	{
+		if (attackManager.IsHitBody(enemy_->GetBody(), enemy_->GetPos()))
+		{
+			enemy_->Defeat();
+		}
+	}
+
+	// “|‚ê‚½“G‚ğ•Ğ•t‚¯‚é
+	RemoveDefeated();
+}
+
+void EnemyManager::RemoveDefeated(void)
+{
+	// ƒ‚ƒfƒ‹‚È‚Ç‚ÌŒãn––‚ğ‚µ‚Ä‚©‚çA”z—ñ‚©‚çŠO‚·
+	for (auto& enemy_ : enemies_)
+	{
+		if (!enemy_->IsAlive())
+		{
+			enemy_->Release();
+		}
+	}
+
+	enemies_.erase(
+		std::remove_if(
+			enemies_.begin(), enemies_.end(),
+			[](const std::unique_ptr<EnemyBase>& enemy)
+			{
+				return !enemy->IsAlive();
+			}),
+		enemies_.end());
 }

@@ -40,6 +40,16 @@ void EnemyGhost::Draw(void)
 	DrawSensor();
 }
 
+void EnemyGhost::Release(void)
+{
+	EnemyBase::Release();
+
+	// 倒れたときや、ゲームが終わるときに、複製したモデルを消す
+	ResourceManager::GetInstance().DeleteModelDuplicate(
+		ResourceManager::SRC::ENEMY_GHOST, modelId_);
+	modelId_ = Resource::INVALID_HANDLE;
+}
+
 void EnemyGhost::UpdateChase(const VECTOR& targetPos)
 {
 	// プレイヤーのほうへ真っすぐ向かう

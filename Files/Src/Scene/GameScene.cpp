@@ -1,3 +1,4 @@
+#include <cstring>
 #include <DxLib.h>
 #include "../Manager/Camera.h"
 #include "../Manager/InputManager.h"
@@ -13,8 +14,8 @@ GameScene::GameScene(void) : SceneBase(), backMenu_(BACK_TEXT)
 	stage_ = nullptr;
 	player_ = nullptr;
 	dirtManager_ = nullptr;
-	isClear_ = false;
 	enemyManager_ = nullptr;
+	isClear_ = false;
 }
 
 GameScene::~GameScene(void)
@@ -26,10 +27,9 @@ void GameScene::Init(void)
 	// クリアへの移行をまだ始めていない状態にする
 	isClear_ = false;
 
-	// カメラモード変更
+	// カメラを操作できるモードにして、最初の位置に戻す
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 	camera_->ChangeMode(Camera::MODE::FREE);
-	// カメラを最初の位置に戻す(前のゲームの位置を引き継がない)
 	camera_->ResetState();
 
 	// グリッド初期化
@@ -51,6 +51,9 @@ void GameScene::Init(void)
 	// 敵の生成
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Init();
+
+	// 攻撃の初期化
+	attackManager_.Init();
 
 	// 当たり判定にステージのモデルを教える(カメラも敵も共通)
 	BodyCollision::SetStageModel(stage_->GetModelId());
@@ -101,6 +104,9 @@ void GameScene::Update(void)
 	// プレイヤー更新
 	player_->Update();
 
+	// 攻撃(左クリック)
+	attackManager_.Update();
+
 	// 汚れの掃除
 	dirtManager_->Update();
 
@@ -115,6 +121,9 @@ void GameScene::Update(void)
 	// 敵の更新(プレイヤーの位置を渡す)
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 	enemyManager_->Update(camera_->GetPos());
+
+	// 攻撃に当たった敵を倒す
+	enemyManager_->DefeatHitEnemies(attackManager_);
 
 	// 敵に触れたら、ゲームオーバーへ
 	if (enemyManager_->IsHitPlayer(camera_->GetBody(), camera_->GetPos()))
@@ -141,6 +150,9 @@ void GameScene::Draw(void)
 
 	// 敵の描画
 	enemyManager_->Draw();
+
+	// 攻撃の描画
+	attackManager_.Draw();
 
 	// 仮の表示
 	DrawString(0, 100, "GameScene", 0xffffff);
@@ -180,7 +192,10 @@ void GameScene::Release(void)
 	enemyManager_->Release();
 	delete enemyManager_;
 
-	// ステージを消す前に、当たり判定から外す
+	// 攻撃解放
+	attackManager_.Release();
+
+	// ステージを消した後に、当たり判定から外す
 	BodyCollision::SetStageModel(BodyCollision::NO_MODEL);
 
 	// ゲームシーンの外では、カメラを自由に動かさない
@@ -231,10 +246,8 @@ void GameScene::DrawCleanCount(void)
 	GetDrawScreenSize(&screenW_, &screenH_);
 	int posY_ = screenH_ / CENTER_DIV;
 
-	DrawString(0, 130, "ESC：タイトル画面", 0xffffff);
-
 	DrawFormatString(
-		0, 160, COUNT_COLOR,
+		COUNT_POS_X, posY_, COUNT_COLOR,
 		COUNT_TEXT,
 		dirtManager_->GetCleanCount(), DirtManager::DIRT_COUNT
 	);

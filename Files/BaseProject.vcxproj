@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Manager\AttackManager.cpp" />
+    <ClCompile Include="Src\Attack\AttackMop.cpp" />
+    <ClCompile Include="Src\Attack\AttackBase.cpp" />
     <ClCompile Include="Src\Scene\PauseScene.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemySensor.cpp" />
     <ClCompile Include="Src\Manager\Resource.cpp" />
@@ -50,6 +53,9 @@
     <ClCompile Include="Src\Object\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Manager\AttackManager.h" />
+    <ClInclude Include="Src\Attack\AttackMop.h" />
+    <ClInclude Include="Src\Attack\AttackBase.h" />
     <ClInclude Include="Src\Scene\PauseScene.h" />
     <ClInclude Include="Src\Object\Enemy\EnemySensor.h" />
     <ClInclude Include="Src\Manager\Resource.h" />

@@ -74,6 +74,9 @@ public:
 	// •`‰æ
 	void Draw(void) override;
 
+	// ‰ğ•ú
+	void Release(void) override;
+
 protected:
 
 	// ŒŸ’m’†‚Ì“®‚«(^‚Á‚·‚®’Ç‚¢‚©‚¯‚é)

@@ -42,6 +42,15 @@ public:
 	// 座標の取得
 	const VECTOR& GetPos(void) const;
 
+	// 生きているか
+	bool IsAlive(void) const;
+
+	// 倒す
+	void Defeat(void);
+
+	// 当たり判定の取得
+	const BodyCollision& GetBody(void) const;
+
 protected:
 
 	// 座標(足元)
@@ -83,5 +92,10 @@ protected:
 
 	// 前フレームからの経過時間(秒)
 	float GetDeltaTime(void) const;
+
+private:
+
+	// 生きているか
+	bool isAlive_;
 
 };

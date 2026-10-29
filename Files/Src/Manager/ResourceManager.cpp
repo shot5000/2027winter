@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include <algorithm>
 #include "ResourceManager.h"
 
 ResourceManager* ResourceManager::instance_ = nullptr;
@@ -113,6 +114,26 @@ int ResourceManager::LoadModelDuplicate(SRC src)
 	res_.duplicateModelIds_.push_back(duplicateId_);
 
 	return duplicateId_;
+}
+
+void ResourceManager::DeleteModelDuplicate(SRC src, int duplicateId)
+{
+	// 読み込んでいないものは、何もしない
+	auto loadedPair_ = loadedMap_.find(src);
+	if (loadedPair_ == loadedMap_.end())
+	{
+		return;
+	}
+
+	// 覚えている複製の中にあれば、モデルを消して、覚えている一覧からも外す
+	auto& ids_ = loadedPair_->second.duplicateModelIds_;
+	auto it_ = std::find(ids_.begin(), ids_.end(), duplicateId);
+	if (it_ == ids_.end())
+	{
+		return;
+	}
+	MV1DeleteModel(duplicateId);
+	ids_.erase(it_);
 }
 
 Resource& ResourceManager::LoadInternal(SRC src)

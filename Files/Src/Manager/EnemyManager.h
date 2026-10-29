@@ -3,6 +3,7 @@
 #include <vector>
 #include <DxLib.h>
 #include "../Object/Enemy/EnemyBase.h"
+class AttackManager;
 
 class EnemyManager
 {
@@ -49,9 +50,15 @@ public:
 	bool IsHitPlayer(
 		const BodyCollision& playerBody, const VECTOR& playerPos) const;
 
+	// UŒ‚‚É“–‚½‚Á‚½“G‚ğ“|‚·
+	void DefeatHitEnemies(const AttackManager& attackManager);
+
 private:
 
 	// “G‚Ì”z—ñ(í—Ş‚ªˆá‚Á‚Ä‚àAEnemyBase‚Æ‚µ‚Ä‚Ü‚Æ‚ß‚Ä‚Â)
 	std::vector<std::unique_ptr<EnemyBase>> enemies_;
+
+	// “|‚ê‚½“G‚ğAŒãn––‚µ‚ÄA”z—ñ‚©‚çŠO‚·
+	void RemoveDefeated(void);
 
 };

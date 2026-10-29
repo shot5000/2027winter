@@ -32,6 +32,8 @@ void EnemyBase::Update(const VECTOR& targetPos)
 
 	// 移動を済ませたあとに、壁・重力・地面の判定(全員共通)
 	body_.Update(pos_, GetDeltaTime());
+
+	isAlive_ = true;
 }
 
 void EnemyBase::DrawDebug(void) const
@@ -53,6 +55,21 @@ bool EnemyBase::IsHitPlayer(
 const VECTOR& EnemyBase::GetPos(void) const
 {
 	return pos_;
+}
+
+bool EnemyBase::IsAlive(void) const
+{
+	return isAlive_;
+}
+
+void EnemyBase::Defeat(void)
+{
+	isAlive_ = false;
+}
+
+const BodyCollision& EnemyBase::GetBody(void) const
+{
+	return body_;
 }
 
 void EnemyBase::UpdateProcess(const VECTOR& targetPos)

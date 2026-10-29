@@ -43,6 +43,9 @@ public:
 	// モデルの複製を作る(同じモデルを複数置くとき用)
 	int LoadModelDuplicate(SRC src);
 
+	// 複製したモデルを1つだけ消す(敵が倒れたときなど)
+	void DeleteModelDuplicate(SRC src, int duplicateId);
+
 private:
 
 	// 静的インスタンス
