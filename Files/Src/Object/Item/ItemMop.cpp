@@ -1,17 +1,17 @@
-#include "../Utility/AsoUtility.h"
-#include "AttackMop.h"
+#include "../../Utility/AsoUtility.h"
+#include "ItemMop.h"
 
-AttackMop::AttackMop(void) : AttackBase(ATTACK_PARAM)
+ItemMop::ItemMop(void) : ItemBase(ITEM_PARAM)
 {
 	startPos_ = AsoUtility::VECTOR_ZERO;
 	endPos_ = AsoUtility::VECTOR_ZERO;
 }
 
-AttackMop::~AttackMop(void)
+ItemMop::~ItemMop(void)
 {
 }
 
-void AttackMop::Draw(void) const
+void ItemMop::Draw(void) const
 {
 	if (!IsActive())
 	{
@@ -34,7 +34,7 @@ void AttackMop::Draw(void) const
 	SetUseLighting(TRUE);
 }
 
-bool AttackMop::IsHitBody(
+bool ItemMop::IsHitBody(
 	const BodyCollision& body, const VECTOR& bodyPos) const
 {
 	// 攻撃が出ていないときは、当たらない
@@ -50,22 +50,7 @@ bool AttackMop::IsHitBody(
 		body.GetRadius()) == TRUE;
 }
 
-const VECTOR& AttackMop::GetStartPos(void) const
-{
-	return startPos_;
-}
-
-const VECTOR& AttackMop::GetEndPos(void) const
-{
-	return endPos_;
-}
-
-float AttackMop::GetRadius(void) const
-{
-	return RADIUS;
-}
-
-void AttackMop::UpdateActive(float rate)
+void ItemMop::UpdateActive(float rate)
 {
 	// 持ち手の位置(目の少し前、少し下)
 	VECTOR eye_ = GetCameraPosition();

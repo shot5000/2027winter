@@ -3,7 +3,7 @@
 #include <vector>
 #include <DxLib.h>
 #include "../Object/Enemy/EnemyBase.h"
-class AttackManager;
+class ItemManager;
 
 class EnemyManager
 {
@@ -51,7 +51,7 @@ public:
 		const BodyCollision& playerBody, const VECTOR& playerPos) const;
 
 	// UŒ‚‚É“–‚½‚Á‚½“G‚ğ“|‚·
-	void DefeatHitEnemies(const AttackManager& attackManager);
+	void DefeatHitEnemies(const ItemManager& itemManager);
 
 private:
 

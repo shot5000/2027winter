@@ -1,20 +1,29 @@
 #pragma once
 #include <DxLib.h>
-#include "AttackBase.h"
+#include "ItemBase.h"
 
-class AttackMop : public AttackBase
+class ItemMop : public ItemBase
 {
 
 public:
 
-	// 攻撃が出ている時間と、次に出せるまでの待ち時間(秒)
+	// 名前
+	static constexpr const char* NAME = "モップ";
+
+	// 攻撃が出ている時間と、次に攻撃できるまでの待ち時間(秒)
 	static constexpr float ACTIVE_TIME = 0.25f;
 	static constexpr float COOLDOWN_TIME = 0.5f;
 
-	// 攻撃ごとの時間
-	static constexpr AttackBase::PARAM ATTACK_PARAM = {
+	// 汚れ1つを消すのにかかる長押しの時間(秒)
+	static constexpr float CLEAN_TIME = 1.0f;
+
+	// アイテムごとの値(攻撃も掃除もできる)
+	static constexpr ItemBase::PARAM ITEM_PARAM = {
+		NAME,
+		ItemBase::KIND::BOTH,
 		ACTIVE_TIME,
-		COOLDOWN_TIME
+		COOLDOWN_TIME,
+		CLEAN_TIME
 	};
 
 	// 攻撃(カプセル)の半径
@@ -33,30 +42,21 @@ public:
 	static constexpr int DRAW_ALPHA = 120;
 
 	// コンストラクタ
-	AttackMop(void);
+	ItemMop(void);
 
 	// デストラクタ
-	~AttackMop(void) override;
+	~ItemMop(void) override;
 
-	// 描画
+	// 攻撃の描画
 	void Draw(void) const override;
 
-	// 相手の体(カプセル)に当たっているか
+	// 相手の体(カプセル)に、攻撃が当たっているか
 	bool IsHitBody(
 		const BodyCollision& body, const VECTOR& bodyPos) const override;
 
-	// 持ち手側の座標
-	const VECTOR& GetStartPos(void) const;
-
-	// 先端側の座標
-	const VECTOR& GetEndPos(void) const;
-
-	// 攻撃(カプセル)の半径
-	float GetRadius(void) const;
-
 protected:
 
-	// 出ている間の処理(見ている向きに、まっすぐ伸ばす)
+	// 攻撃が出ている間の処理(見ている向きに、まっすぐ伸ばす)
 	void UpdateActive(float rate) override;
 
 private:

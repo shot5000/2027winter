@@ -3,6 +3,7 @@
 #include "../Manager/Camera.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Object/Collision/BodyCollision.h"
 #include "../Object/Grid.h"
 #include "../Object/Stage.h"
 #include "../Object/Player.h"
@@ -52,8 +53,8 @@ void GameScene::Init(void)
 	enemyManager_ = new EnemyManager();
 	enemyManager_->Init();
 
-	// 攻撃の初期化
-	attackManager_.Init();
+	// アイテムの初期化
+	itemManager_.Init();
 
 	// 当たり判定にステージのモデルを教える(カメラも敵も共通)
 	BodyCollision::SetStageModel(stage_->GetModelId());
@@ -104,26 +105,18 @@ void GameScene::Update(void)
 	// プレイヤー更新
 	player_->Update();
 
-	// 攻撃(左クリック)
-	attackManager_.Update();
+	// アイテムの更新(スロットの選択、左クリックでの攻撃)
+	itemManager_.Update();
 
-	// 汚れの掃除
-	dirtManager_->Update();
-
-	// 全部掃除したら、ゲームクリアへ
-	if (dirtManager_->IsAllCleaned() && !isClear_)
-	{
-		isClear_ = true;
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_CLEAR);
-		return;
-	}
+	// 汚れの掃除(掃除できるアイテムを持っているとき、Eの長押し)
+	dirtManager_->Update(itemManager_.CanClean(), itemManager_.GetCleanTime());
 
 	// 敵の更新(プレイヤーの位置を渡す)
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 	enemyManager_->Update(camera_->GetPos());
 
 	// 攻撃に当たった敵を倒す
-	enemyManager_->DefeatHitEnemies(attackManager_);
+	enemyManager_->DefeatHitEnemies(itemManager_);
 
 	// 敵に触れたら、ゲームオーバーへ
 	if (enemyManager_->IsHitPlayer(camera_->GetBody(), camera_->GetPos()))
@@ -152,13 +145,16 @@ void GameScene::Draw(void)
 	enemyManager_->Draw();
 
 	// 攻撃の描画
-	attackManager_.Draw();
+	itemManager_.DrawAttack();
 
 	// 仮の表示
 	DrawString(0, 100, "GameScene", 0xffffff);
 
 	// 掃除した数の表示
 	DrawCleanCount();
+
+	// アイテムスロット
+	itemManager_.DrawSlot();
 
 	// 照準と操作表示は、ゲームが動いているときだけ(最後に描いて手前に出す)
 	if (!backMenu_.IsOpen())
@@ -192,8 +188,8 @@ void GameScene::Release(void)
 	enemyManager_->Release();
 	delete enemyManager_;
 
-	// 攻撃解放
-	attackManager_.Release();
+	// アイテム解放
+	itemManager_.Release();
 
 	// ステージを消した後に、当たり判定から外す
 	BodyCollision::SetStageModel(BodyCollision::NO_MODEL);
@@ -217,6 +213,12 @@ void GameScene::DrawCrosshair(void)
 
 void GameScene::DrawPrompt(void)
 {
+	// 掃除できるアイテムを持っていないときは、出さない
+	if (!itemManager_.CanClean())
+	{
+		return;
+	}
+
 	// 汚れを狙っていないときは出さない
 	if (!dirtManager_->IsAiming())
 	{

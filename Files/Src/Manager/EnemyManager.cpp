@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "AttackManager.h"
+#include "ItemManager.h"
 #include "../Object/Enemy/EnemyGhost.h"
 #include "EnemyManager.h"
 
@@ -75,12 +75,12 @@ bool EnemyManager::IsHitPlayer(
 	return false;
 }
 
-void EnemyManager::DefeatHitEnemies(const AttackManager& attackManager)
+void EnemyManager::DefeatHitEnemies(const ItemManager& itemManager)
 {
 	// UŒ‚‚É“–‚½‚Á‚Ä‚¢‚é“G‚ðA“|‚·
 	for (auto& enemy_ : enemies_)
 	{
-		if (attackManager.IsHitBody(enemy_->GetBody(), enemy_->GetPos()))
+		if (itemManager.IsHitBody(enemy_->GetBody(), enemy_->GetPos()))
 		{
 			enemy_->Defeat();
 		}

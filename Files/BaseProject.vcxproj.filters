@@ -78,9 +78,6 @@
     <ClCompile Include="Src\Manager\Camera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Manager\MiniCamera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Object\Grid.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -132,13 +129,13 @@
     <ClCompile Include="Src\Scene\PauseScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Attack\AttackBase.cpp">
+    <ClCompile Include="Src\Object\Item\ItemBase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Attack\AttackMop.cpp">
+    <ClCompile Include="Src\Object\Item\ItemMop.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Manager\AttackManager.cpp">
+    <ClCompile Include="Src\Manager\ItemManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -174,9 +171,6 @@
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
     <ClInclude Include="Src\Manager\Camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Manager\MiniCamera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Grid.h">
@@ -230,13 +224,13 @@
     <ClInclude Include="Src\Scene\PauseScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Attack\AttackBase.h">
+    <ClInclude Include="Src\Object\Item\ItemBase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Attack\AttackMop.h">
+    <ClInclude Include="Src\Object\Item\ItemMop.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Manager\AttackManager.h">
+    <ClInclude Include="Src\Manager\ItemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

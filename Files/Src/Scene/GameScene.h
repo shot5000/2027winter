@@ -2,8 +2,8 @@
 #include "SceneBase.h"
 #include "PauseScene.h"
 #include "../Manager/EnemyManager.h"
-#include "../Manager/AttackManager.h"
 #include "../Object/Dirt/DirtManager.h"
+#include "../Manager/ItemManager.h"
 class Grid;
 class Stage;
 class Player;
@@ -23,11 +23,11 @@ public:
 	static constexpr int CENTER_DIV = 2;
 
 	// 操作表示の文字と色
-	static constexpr const char* PROMPT_TEXT = "掃除する \n\n E長押し";
+	static constexpr const char* PROMPT_TEXT = "E長押し";
 	static constexpr unsigned int PROMPT_COLOR = 0xffffff;
 
 	// 操作表示を照準からどれだけ下に出すか
-	static constexpr int PROMPT_OFFSET_Y = 20;
+	static constexpr int PROMPT_OFFSET_Y = 40;
 
 	// 掃除した数の表示
 	static constexpr const char* COUNT_TEXT = "掃除した数 %d/ %d";
@@ -64,8 +64,8 @@ private:
 	// タイトルに戻る確認の選択肢
 	PauseScene backMenu_;
 
-	// 攻撃の管理
-	AttackManager attackManager_;
+	// アイテム(スロットと、攻撃)の管理
+	ItemManager itemManager_;
 
 	// 敵の管理
 	EnemyManager* enemyManager_;
@@ -73,7 +73,7 @@ private:
 	// 汚れの管理
 	DirtManager* dirtManager_;
 
-	// ゲームクリアへの移行を始めたか
+	// ゲームクリアへの移行を始めたか(ドアや制限時間でクリアに移るときに使う)
 	bool isClear_;
 
 	// グリッド線

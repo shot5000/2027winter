@@ -23,9 +23,6 @@ public:
 	// 掃除できる距離
 	static constexpr float CLEAN_DISTANCE = 300.0f;
 
-	// 掃除にかかる長押しの時間(秒)
-	static constexpr float CLEAN_TIME = 0.5f;
-
 	// 狙っている汚れがないときの番号
 	static constexpr int NO_INDEX = -1;
 
@@ -51,8 +48,8 @@ public:
 	// 初期化
 	void Init(void);
 
-	// 更新(長押しの判定と掃除)
-	void Update(void);
+	// 更新(掃除できるときだけ、長押しの判定をする。cleanTime は汚れ1つを消す時間)
+	void Update(bool canClean, float cleanTime);
 
 	// 描画
 	void Draw(void);

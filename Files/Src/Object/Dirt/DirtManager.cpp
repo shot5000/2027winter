@@ -28,9 +28,16 @@ void DirtManager::Init(void)
 	deltaTime_ = 0.0f;
 }
 
-void DirtManager::Update(void)
+void DirtManager::Update(bool canClean, float cleanTime)
 {
 	UpdateDeltaTime();
+
+	// ‘|œ‚Å‚«‚È‚¢‚Æ‚«(‘|œ‚Å‚«‚éƒAƒCƒeƒ€‚ðŽ‚Á‚Ä‚¢‚È‚¢‚Æ‚«)‚ÍA’·‰Ÿ‚µ‚Ì‹L˜^‚àÁ‚·
+	if (!canClean)
+	{
+		ResetHold();
+		return;
+	}
 
 	auto& ins = InputManager::GetInstance();
 
@@ -51,8 +58,8 @@ void DirtManager::Update(void)
 
 	holdTime_ += deltaTime_;
 
-	// ‹K’è‚ÌŽžŠÔ‚ð’´‚¦‚½‚çA‚»‚Ì‰˜‚ê‚ðÁ‚·
-	if (holdTime_ >= CLEAN_TIME)
+	// ‹K’è‚ÌŽžŠÔ‚ð’´‚¦‚½‚çA‚»‚Ì‰˜‚ê‚ðÁ‚µ‚ÄA‘|œ‚µ‚½”‚ð‘‚â‚·
+	if (holdTime_ >= cleanTime)
 	{
 		dirts_.erase(dirts_.begin() + holdIndex_);
 		cleanCount_++;
@@ -76,12 +83,6 @@ bool DirtManager::IsAiming(void) const
 int DirtManager::GetCleanCount(void) const
 {
 	return cleanCount_;
-}
-
-bool DirtManager::IsAllCleaned(void) const
-{
-	return cleanCount_ >= DIRT_COUNT;
-
 }
 
 int DirtManager::GetAimedIndex(void) const
