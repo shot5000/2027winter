@@ -12,6 +12,9 @@ EnemyBase::EnemyBase(
 	frontOffset_ = 0.0f;
 	body_.Init(bodyParam);
 	body_.SetAngleY(angleY_);
+	isAlive_ = true;
+	hp_ = DEFAULT_HP;
+	stunTimer_ = 0.0f;
 }
 
 EnemyBase::~EnemyBase(void)
@@ -24,16 +27,22 @@ void EnemyBase::Init(void)
 
 void EnemyBase::Update(const VECTOR& targetPos)
 {
-	// 敵ごとの動き
-	UpdateProcess(targetPos);
+	if (IsStun())
+	{
+		// 怯んでいる間は、動かずに、時間だけ進める
+		stunTimer_ -= GetDeltaTime();
+	}
+	else
+	{
+		// 敵ごとの動き
+		UpdateProcess(targetPos);
+	}
 
 	// 向きが変わっていたら、当たり判定も同じ向きにする
 	body_.SetAngleY(angleY_);
 
-	// 移動を済ませたあとに、壁・重力・地面の判定(全員共通)
+	// 壁・重力・地面の判定(全員共通。怯んでいる間も、落ちる動きは続ける)
 	body_.Update(pos_, GetDeltaTime());
-
-	isAlive_ = true;
 }
 
 void EnemyBase::DrawDebug(void) const
@@ -60,6 +69,25 @@ const VECTOR& EnemyBase::GetPos(void) const
 bool EnemyBase::IsAlive(void) const
 {
 	return isAlive_;
+}
+
+void EnemyBase::Damage(int damage)
+{
+	// 倒れているとき、怯んでいる間は、ダメージを受けない
+	if (!isAlive_ || IsStun())
+	{
+		return;
+	}
+
+	hp_ -= damage;
+	if (hp_ <= 0)
+	{
+		isAlive_ = false;
+		return;
+	}
+
+	// 怯んで、赤く点滅する
+	stunTimer_ = STUN_TIME;
 }
 
 void EnemyBase::Defeat(void)
@@ -133,4 +161,26 @@ VECTOR EnemyBase::GetDirXZ(float angleY)
 float EnemyBase::GetDeltaTime(void) const
 {
 	return SceneManager::GetInstance().GetDeltaTime();
+}
+
+bool EnemyBase::IsStun(void) const
+{
+	return stunTimer_ > 0.0f;
+}
+
+COLOR_F EnemyBase::GetColorScale(void) const
+{
+	// 怯んでいないときは、通常の色
+	if (!IsStun())
+	{
+		return NORMAL_COLOR_SCALE;
+	}
+
+	// 怯み始めてからの時間で、赤と通常を、一定の間隔で交互にする(最初は赤)
+	int phase_ = static_cast<int>((STUN_TIME - stunTimer_) / BLINK_INTERVAL);
+	if (phase_ % BLINK_DIV == 0)
+	{
+		return FLASH_COLOR_SCALE;
+	}
+	return NORMAL_COLOR_SCALE;
 }

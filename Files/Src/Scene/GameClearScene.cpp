@@ -1,4 +1,5 @@
 #include <DxLib.h>
+#include "../Common/GameResult.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
 #include "GameClearScene.h"
@@ -33,6 +34,11 @@ void GameClearScene::Draw(void)
 	DrawString(0, 100, "GameClearScene", 0xffffff);
 
 	DrawString(0, 130, "SPACE：タイトル画面", 0xffffff);
+
+	// 獲得したお金
+	DrawFormatString(
+		MONEY_POS_X, MONEY_POS_Y, MONEY_COLOR,
+		MONEY_TEXT, GameResult::GetMoney());
 }
 
 void GameClearScene::Release(void)

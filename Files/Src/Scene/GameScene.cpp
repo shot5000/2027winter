@@ -1,5 +1,8 @@
+#include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <DxLib.h>
+#include "../Common/GameResult.h"
 #include "../Manager/Camera.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
@@ -16,7 +19,7 @@ GameScene::GameScene(void) : SceneBase(), backMenu_(BACK_TEXT)
 	player_ = nullptr;
 	dirtManager_ = nullptr;
 	enemyManager_ = nullptr;
-	isClear_ = false;
+	timeLeft_ = TIME_LIMIT;
 }
 
 GameScene::~GameScene(void)
@@ -25,8 +28,9 @@ GameScene::~GameScene(void)
 
 void GameScene::Init(void)
 {
-	// クリアへの移行をまだ始めていない状態にする
-	isClear_ = false;
+	// 前のゲームのお金を消して、制限時間を最初に戻す
+	GameResult::Reset();
+	timeLeft_ = TIME_LIMIT;
 
 	// カメラを操作できるモードにして、最初の位置に戻す
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
@@ -55,6 +59,9 @@ void GameScene::Init(void)
 
 	// アイテムの初期化
 	itemManager_.Init();
+
+	// ドアの初期化
+	goal_.Init();
 
 	// 当たり判定にステージのモデルを教える(カメラも敵も共通)
 	BodyCollision::SetStageModel(stage_->GetModelId());
@@ -96,6 +103,14 @@ void GameScene::Update(void)
 		return;
 	}
 
+	// 制限時間を進めて、時間切れになったら、クリアへ
+	timeLeft_ -= SceneManager::GetInstance().GetDeltaTime();
+	if (timeLeft_ <= 0.0f)
+	{
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_CLEAR);
+		return;
+	}
+
 	// グリッド更新
 	grid_->Update();
 
@@ -108,15 +123,24 @@ void GameScene::Update(void)
 	// アイテムの更新(スロットの選択、左クリックでの攻撃)
 	itemManager_.Update();
 
-	// 汚れの掃除(掃除できるアイテムを持っているとき、Eの長押し)
-	dirtManager_->Update(itemManager_.CanClean(), itemManager_.GetCleanTime());
+	// 汚れの掃除(掃除できるアイテムを持っているとき、Eの長押し)。消したらお金を得る
+	int reward_ = dirtManager_->Update(
+		itemManager_.CanClean(), itemManager_.GetCleanTime());
+	GameResult::AddMoney(reward_);
+
+	// ドアをEの長押しで開けたら、クリアへ
+	if (goal_.Update())
+	{
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_CLEAR);
+		return;
+	}
 
 	// 敵の更新(プレイヤーの位置を渡す)
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 	enemyManager_->Update(camera_->GetPos());
 
-	// 攻撃に当たった敵を倒す
-	enemyManager_->DefeatHitEnemies(itemManager_);
+	// 攻撃に当たった敵に、ダメージを与える
+	enemyManager_->DamageHitEnemies(itemManager_);
 
 	// 敵に触れたら、ゲームオーバーへ
 	if (enemyManager_->IsHitPlayer(camera_->GetBody(), camera_->GetPos()))
@@ -141,6 +165,9 @@ void GameScene::Draw(void)
 	// 汚れの描画
 	dirtManager_->Draw();
 
+	// ドアの描画
+	goal_.Draw();
+
 	// 敵の描画
 	enemyManager_->Draw();
 
@@ -150,8 +177,10 @@ void GameScene::Draw(void)
 	// 仮の表示
 	DrawString(0, 100, "GameScene", 0xffffff);
 
-	// 掃除した数の表示
+	// 掃除した数、所持金、残り時間の表示
 	DrawCleanCount();
+	DrawMoney();
+	DrawTime();
 
 	// アイテムスロット
 	itemManager_.DrawSlot();
@@ -213,31 +242,19 @@ void GameScene::DrawCrosshair(void)
 
 void GameScene::DrawPrompt(void)
 {
-	// 掃除できるアイテムを持っていないときは、出さない
-	if (!itemManager_.CanClean())
+	// ドアを狙っているときは、ドアを開ける案内(どのアイテムでも開けられる)
+	if (goal_.IsAiming())
 	{
+		DrawPromptText(DOOR_PROMPT_TEXT);
+		DrawDoorGauge();
 		return;
 	}
 
-	// 汚れを狙っていないときは出さない
-	if (!dirtManager_->IsAiming())
+	// 掃除できるアイテムを持っていて、汚れを狙っているときは、掃除の案内
+	if (itemManager_.CanClean() && dirtManager_->IsAiming())
 	{
-		return;
+		DrawPromptText(PROMPT_TEXT);
 	}
-
-	// 画面の中心
-	int screenW_ = 0;
-	int screenH_ = 0;
-	GetDrawScreenSize(&screenW_, &screenH_);
-	int centerX_ = screenW_ / CENTER_DIV;
-	int centerY_ = screenH_ / CENTER_DIV;
-
-	// 文字の幅を測って、左右中央にそろえる
-	int textW_ = GetDrawStringWidth(PROMPT_TEXT, static_cast<int>(strlen(PROMPT_TEXT)));
-	int drawX_ = centerX_ - textW_ / CENTER_DIV;
-
-	// 照準の少し下に表示
-	DrawString(drawX_, centerY_ + PROMPT_OFFSET_Y, PROMPT_TEXT, PROMPT_COLOR);
 }
 
 void GameScene::DrawCleanCount(void)
@@ -255,6 +272,40 @@ void GameScene::DrawCleanCount(void)
 	);
 }
 
+void GameScene::DrawMoney(void)
+{
+	// 所持金の文字を作る
+	char text_[TEXT_BUF_SIZE];
+	snprintf(text_, sizeof(text_), MONEY_TEXT, GameResult::GetMoney());
+
+	// 文字の幅を測って、画面の右上にそろえる
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int textW_ = GetDrawStringWidth(text_, static_cast<int>(strlen(text_)));
+	DrawString(screenW_ - MONEY_MARGIN_X - textW_, MONEY_POS_Y, text_, MONEY_COLOR);
+}
+
+void GameScene::DrawTime(void)
+{
+	if (!IS_DRAW_TIME)
+	{
+		return;
+	}
+
+	// 残りの秒数を、分と秒に分ける(端数は切り上げる)
+	int totalSec_ = static_cast<int>(ceilf(timeLeft_));
+	char text_[TEXT_BUF_SIZE];
+	snprintf(text_, sizeof(text_), TIME_TEXT, totalSec_ / SEC_PER_MIN, totalSec_ % SEC_PER_MIN);
+
+	// 文字の幅を測って、画面の上の中央にそろえる
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int textW_ = GetDrawStringWidth(text_, static_cast<int>(strlen(text_)));
+	DrawString((screenW_ - textW_) / CENTER_DIV, TIME_POS_Y, text_, TIME_COLOR);
+}
+
 void GameScene::UpdateBackMenu(void)
 {
 	switch (backMenu_.Update())
@@ -270,4 +321,46 @@ void GameScene::UpdateBackMenu(void)
 	default:
 		break;
 	}
+}
+
+void GameScene::DrawPromptText(const char* text)
+{
+	// 画面の中心
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int centerX_ = screenW_ / CENTER_DIV;
+	int centerY_ = screenH_ / CENTER_DIV;
+
+	// 文字の幅を測って、左右中央にそろえる
+	int textW_ = GetDrawStringWidth(text, static_cast<int>(strlen(text)));
+	int drawX_ = centerX_ - textW_ / CENTER_DIV;
+
+	// 照準の少し下に表示
+	DrawString(drawX_, centerY_ + PROMPT_OFFSET_Y, text, PROMPT_COLOR);
+}
+
+void GameScene::DrawDoorGauge(void)
+{
+	// 長押しを始めていないときは出さない
+	float rate_ = goal_.GetHoldRate();
+	if (rate_ <= 0.0f)
+	{
+		return;
+	}
+
+	// 操作表示の下に、横長のゲージを出す
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int centerX_ = screenW_ / CENTER_DIV;
+	int centerY_ = screenH_ / CENTER_DIV;
+	int left_ = centerX_ - GAUGE_W / CENTER_DIV;
+	int top_ = centerY_ + PROMPT_OFFSET_Y + GAUGE_OFFSET_Y;
+
+	DrawBox(left_, top_, left_ + GAUGE_W, top_ + GAUGE_H, GAUGE_BACK_COLOR, TRUE);
+	DrawBox(
+		left_, top_,
+		left_ + static_cast<int>(GAUGE_W * rate_), top_ + GAUGE_H,
+		GAUGE_COLOR, TRUE);
 }

@@ -28,7 +28,7 @@ void DirtManager::Init(void)
 	deltaTime_ = 0.0f;
 }
 
-void DirtManager::Update(bool canClean, float cleanTime)
+int DirtManager::Update(bool canClean, float cleanTime)
 {
 	UpdateDeltaTime();
 
@@ -36,7 +36,7 @@ void DirtManager::Update(bool canClean, float cleanTime)
 	if (!canClean)
 	{
 		ResetHold();
-		return;
+		return NO_REWARD;
 	}
 
 	auto& ins = InputManager::GetInstance();
@@ -46,7 +46,7 @@ void DirtManager::Update(bool canClean, float cleanTime)
 	if (!ins.IsNew(KEY_INPUT_E) || aimedIndex_ == NO_INDEX)
 	{
 		ResetHold();
-		return;
+		return NO_REWARD;
 	}
 
 	// •Ê‚Ì‰˜‚ê‚É‘_‚¢‚ªˆÚ‚Á‚½‚çAŽžŠÔ‚ðÅ‰‚©‚ç”‚¦’¼‚·
@@ -58,13 +58,16 @@ void DirtManager::Update(bool canClean, float cleanTime)
 
 	holdTime_ += deltaTime_;
 
-	// ‹K’è‚ÌŽžŠÔ‚ð’´‚¦‚½‚çA‚»‚Ì‰˜‚ê‚ðÁ‚µ‚ÄA‘|œ‚µ‚½”‚ð‘‚â‚·
+	// ‹K’è‚ÌŽžŠÔ‚ð’´‚¦‚½‚çA‚»‚Ì‰˜‚ê‚ðÁ‚µ‚ÄA‘|œ‚µ‚½”‚ð‘‚â‚µA•ñV‚ð•Ô‚·
 	if (holdTime_ >= cleanTime)
 	{
 		dirts_.erase(dirts_.begin() + holdIndex_);
 		cleanCount_++;
 		ResetHold();
+		return DIRT_REWARD;
 	}
+
+	return NO_REWARD;
 }
 
 void DirtManager::Draw(void)

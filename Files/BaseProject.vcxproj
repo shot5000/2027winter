@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Goal\Goal.cpp" />
+    <ClCompile Include="Src\Common\GameResult.cpp" />
     <ClCompile Include="Src\Manager\ItemManager.cpp" />
     <ClCompile Include="Src\Object\Item\ItemBase.cpp" />
     <ClCompile Include="Src\Object\Item\ItemMop.cpp" />
@@ -52,6 +54,8 @@
     <ClCompile Include="Src\Object\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Goal\Goal.h" />
+    <ClInclude Include="Src\Common\GameResult.h" />
     <ClInclude Include="Src\Manager\ItemManager.h" />
     <ClInclude Include="Src\Object\Item\ItemBase.h" />
     <ClInclude Include="Src\Object\Item\ItemMop.h" />

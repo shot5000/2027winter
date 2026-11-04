@@ -25,6 +25,9 @@ public:
 		0.0f,
 	};
 
+	// UŒ‚1‰ñ‚Åó‚¯‚éƒ_ƒ[ƒW
+	static constexpr int ATTACK_DAMAGE = 1;
+
 	// “–‚½‚è”»’è‚ğ•\¦‚·‚é‚©(Šm”F‚ªI‚í‚Á‚½‚ç false ‚É‚·‚é)
 	static constexpr bool DEBUG_DRAW = true;
 
@@ -50,8 +53,8 @@ public:
 	bool IsHitPlayer(
 		const BodyCollision& playerBody, const VECTOR& playerPos) const;
 
-	// UŒ‚‚É“–‚½‚Á‚½“G‚ğ“|‚·
-	void DefeatHitEnemies(const ItemManager& itemManager);
+	// UŒ‚‚É“–‚½‚Á‚½“G‚ÉAƒ_ƒ[ƒW‚ğ—^‚¦‚é(‘Ì—Í‚ª0‚É‚È‚Á‚½“G‚Í“|‚ê‚é)
+	void DamageHitEnemies(const ItemManager& itemManager);
 
 private:
 

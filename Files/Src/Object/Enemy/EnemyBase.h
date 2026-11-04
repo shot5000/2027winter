@@ -11,6 +11,22 @@ public:
 	// これより近いときは動かない(向きが決まらないので)
 	static constexpr float ARRIVE_DIST = 1.0f;
 
+	// 最初の体力
+	static constexpr int DEFAULT_HP = 3;
+
+	// 攻撃を受けて怯む時間(秒)。この間は動かず、続けてダメージも受けない
+	static constexpr float STUN_TIME = 0.5f;
+
+	// 赤く点滅する間隔(秒)
+	static constexpr float BLINK_INTERVAL = 0.1f;
+
+	// 点滅の、赤と通常を切り替えるための割る数
+	static constexpr int BLINK_DIV = 2;
+
+	// モデルの色にかける割合(通常のとき、赤く光っているとき)
+	static constexpr COLOR_F NORMAL_COLOR_SCALE = { 1.0f, 1.0f, 1.0f, 1.0f };
+	static constexpr COLOR_F FLASH_COLOR_SCALE = { 1.0f, 0.2f, 0.2f, 1.0f };
+
 	// コンストラクタ(置く座標、体の形、最初の向きを受け取る)
 	EnemyBase(
 		const VECTOR& pos,
@@ -45,7 +61,10 @@ public:
 	// 生きているか
 	bool IsAlive(void) const;
 
-	// 倒す
+	// ダメージを受ける(体力が0になったら倒れる。怯んでいる間は受けない)
+	void Damage(int damage);
+
+	// すぐに倒す
 	void Defeat(void);
 
 	// 当たり判定の取得
@@ -68,7 +87,7 @@ protected:
 	// 索敵(使う敵だけ、子クラスのコンストラクタで Init する)
 	EnemySensor sensor_;
 
-	// 敵ごとの動き。判定の前に呼ばれる
+	// 敵ごとの動き。判定の前に呼ばれる(怯んでいる間は呼ばれない)
 	// 初期では、索敵の状態に応じて UpdateSearch / UpdateChase を呼ぶ
 	virtual void UpdateProcess(const VECTOR& targetPos);
 
@@ -93,9 +112,22 @@ protected:
 	// 前フレームからの経過時間(秒)
 	float GetDeltaTime(void) const;
 
+	// 怯んでいるか
+	bool IsStun(void) const;
+
+	// 今のモデルの色にかける割合(怯んでいる間は、赤と通常を交互にする)
+	// 子クラスの Draw で、MV1SetDifColorScale に渡して使う
+	COLOR_F GetColorScale(void) const;
+
 private:
 
 	// 生きているか
 	bool isAlive_;
+
+	// 体力
+	int hp_;
+
+	// 怯んでいる残り時間(秒)
+	float stunTimer_;
 
 };

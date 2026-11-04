@@ -34,6 +34,9 @@ void EnemyGhost::Draw(void)
 	drawPos_.y += MODEL_OFFSET_Y;
 	MV1SetPosition(modelId_, drawPos_);
 	MV1SetRotationXYZ(modelId_, VGet(0.0f, angleY_, 0.0f));
+
+	// 怯んでいる間は、赤と通常を交互にする
+	MV1SetDifColorScale(modelId_, GetColorScale());
 	MV1DrawModel(modelId_);
 
 	// 索敵範囲(検知前は扇、検知中は円)

@@ -39,6 +39,12 @@ public:
 	// 1フレームの経過時間の上限(秒)
 	static constexpr float DELTA_TIME_MAX = 0.1f;
 
+	// 汚れ1個を消したときの報酬(お金)
+	static constexpr int DIRT_REWARD = 100;
+
+	// 汚れを消していないときの報酬
+	static constexpr int NO_REWARD = 0;
+
 	// コンストラクタ
 	DirtManager(void);
 
@@ -49,7 +55,8 @@ public:
 	void Init(void);
 
 	// 更新(掃除できるときだけ、長押しの判定をする。cleanTime は汚れ1つを消す時間)
-	void Update(bool canClean, float cleanTime);
+	// このフレームに汚れを消したら、その報酬(お金)を返す。消していなければ NO_REWARD
+	int Update(bool canClean, float cleanTime);
 
 	// 描画
 	void Draw(void);

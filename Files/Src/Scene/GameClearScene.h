@@ -6,6 +6,12 @@ class GameClearScene : public SceneBase
 
 public:
 
+	// Šl“¾‚µ‚½‚¨‹à‚Ì•\Ž¦
+	static constexpr const char* MONEY_TEXT = "Šl“¾‹àŠz %d‰~";
+	static constexpr unsigned int MONEY_COLOR = 0xffff00;
+	static constexpr int MONEY_POS_X = 400;
+	static constexpr int MONEY_POS_Y = 300;
+
 	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	GameClearScene(void);
 
