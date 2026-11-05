@@ -1,7 +1,7 @@
 #include <cstring>
 #include <DxLib.h>
-#include "InputManager.h"
-#include "../Object/Item/ItemMop.h"
+#include "../../Manager/InputManager.h"
+#include "ItemMop.h"
 #include "ItemManager.h"
 
 ItemManager::ItemManager(void)
@@ -161,6 +161,16 @@ float ItemManager::GetCleanTime(void) const
 		return 0.0f;
 	}
 	return selected_->GetCleanTime();
+}
+
+float ItemManager::GetCleanReach(void) const
+{
+	ItemBase* selected_ = GetSelectedItem();
+	if (selected_ == nullptr)
+	{
+		return 0.0f;
+	}
+	return selected_->GetCleanReach();
 }
 
 int ItemManager::GetHitDamage(

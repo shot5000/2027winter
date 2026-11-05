@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 #include <DxLib.h>
-#include "../Object/Enemy/EnemyBase.h"
+#include "EnemyBase.h"
 class ItemManager;
 
 class EnemyManager
@@ -15,8 +15,8 @@ public:
 
 	// EnemyGhostを置く座標(増やすときは GHOST_COUNT も変える)
 	static constexpr VECTOR GHOST_POS_LIST[GHOST_COUNT] = {
-		{ -600.0f, 100.0f, 0.0f },
-		{ 300.0f, 100.0f, 200.0f },
+		{ -600.0f, 0.0f, 0.0f },
+		{ 300.0f, 0.0f, 200.0f },
 	};
 
 	// EnemyGhostの最初の向き(Y軸の角度。0のとき、頭は-Z側を向く)

@@ -148,8 +148,10 @@ void ParamManager::LoadItem(void)
 			ItemParam param_;
 			param_.attackPower_ = data_.value("attackPower", param_.attackPower_);
 			param_.cooldownTime_ = data_.value("cooldownTime", param_.cooldownTime_);
+			param_.attackReach_ = data_.value("attackReach", param_.attackReach_);
+			param_.attackRadius_ = data_.value("attackRadius", param_.attackRadius_);
 			param_.cleanSpeed_ = data_.value("cleanSpeed", param_.cleanSpeed_);
-			param_.reach_ = data_.value("reach", param_.reach_);
+			param_.cleanReach_ = data_.value("cleanReach", param_.cleanReach_);
 			param_.moveSpeedRate_ = data_.value("moveSpeedRate", param_.moveSpeedRate_);
 			param_.durability_ = data_.value("durability", param_.durability_);
 			param_.attackVolume_ = data_.value("attackVolume", param_.attackVolume_);

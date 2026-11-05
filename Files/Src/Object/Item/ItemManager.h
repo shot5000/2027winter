@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <DxLib.h>
-#include "../Object/Item/ItemBase.h"
+#include "ItemBase.h"
 
 class ItemManager
 {
@@ -82,6 +82,9 @@ public:
 
 	// 選んでいるアイテムの、汚れ1つを消すのにかかる時間(秒)
 	float GetCleanTime(void) const;
+
+	// 選んでいるアイテムで、掃除できる距離(アイテムを持っていなければ0)
+	float GetCleanReach(void) const;
 
 	// 攻撃が相手の体(カプセル)に当たっていたら、そのダメージを返す(複数なら一番大きい値。当たっていなければ NO_DAMAGE)
 	int GetHitDamage(const BodyCollision& body, const VECTOR& bodyPos) const;

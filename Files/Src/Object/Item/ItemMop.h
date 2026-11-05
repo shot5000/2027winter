@@ -23,9 +23,6 @@ public:
 		ACTIVE_TIME
 	};
 
-	// 攻撃(カプセル)の半径
-	static constexpr float RADIUS = 30.0f;
-
 	// 持ち手の位置：目の位置から、正面へ離す距離と、下へ下げる高さ
 	static constexpr float HAND_FRONT_DIST = 30.0f;
 	static constexpr float HAND_OFFSET_Y = -20.0f;

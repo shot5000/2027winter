@@ -48,6 +48,10 @@ void ResourceManager::Init(void)
 	// エネミー
 	resourcesMap_.emplace(SRC::ENEMY_GHOST,
 		std::make_unique<Resource>(Resource::TYPE::MODEL, "Enemy/Rat.mv1"));
+
+	// アイテム
+	resourcesMap_.emplace(SRC::MOP_IMAGE,
+		std::make_unique<Resource>(Resource::TYPE::IMAGE, "Item/Mop.png"));
 }
 
 void ResourceManager::Release(void)

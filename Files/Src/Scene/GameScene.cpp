@@ -133,7 +133,8 @@ void GameScene::Update(void)
 
 	// 汚れの掃除(掃除できるアイテムを持っているとき、Eの長押し)。消したらお金を得る
 	int reward_ = dirtManager_->Update(
-		itemManager_.CanClean(), itemManager_.GetCleanTime());
+		itemManager_.CanClean(), itemManager_.GetCleanTime(),
+		itemManager_.GetCleanReach());
 	GameResult::AddMoney(reward_);
 
 	// ドアをEの長押しで開けたら、クリアへ
@@ -259,7 +260,7 @@ void GameScene::DrawPrompt(void)
 	}
 
 	// 掃除できるアイテムを持っていて、汚れを狙っているときは、掃除の案内
-	if (itemManager_.CanClean() && dirtManager_->IsAiming())
+	if (itemManager_.CanClean() && dirtManager_->IsAiming(itemManager_.GetCleanReach()))
 	{
 		DrawPromptText(PROMPT_TEXT);
 	}

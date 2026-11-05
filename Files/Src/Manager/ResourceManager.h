@@ -11,9 +11,12 @@ public:
 	// リソース名(増やすときはここに足して、Init に登録を足す)
 	enum class SRC
 	{
-		STAGE,
+		STAGE = 1,
 
-		ENEMY_GHOST,
+		ENEMY_GHOST = 101,
+
+		MOP_IMAGE = 201,
+	
 	};
 
 	// 明示的にインスタンスを生成する

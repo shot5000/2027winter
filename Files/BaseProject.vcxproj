@@ -24,7 +24,7 @@
     <ClCompile Include="Src\Object\Item\ItemParam.cpp" />
     <ClCompile Include="Src\Object\Goal\Goal.cpp" />
     <ClCompile Include="Src\Common\GameResult.cpp" />
-    <ClCompile Include="Src\Manager\ItemManager.cpp" />
+    <ClCompile Include="Src\Object\Item\ItemManager.cpp" />
     <ClCompile Include="Src\Object\Item\ItemBase.cpp" />
     <ClCompile Include="Src\Object\Item\ItemMop.cpp" />
     <ClCompile Include="Src\Scene\PauseScene.cpp" />
@@ -33,7 +33,7 @@
     <ClCompile Include="Src\Manager\ResourceManager.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyBase.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyGhost.cpp" />
-    <ClCompile Include="Src\Manager\EnemyManager.cpp" />
+    <ClCompile Include="Src\Object\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Src\Object\Collision\BodyCollision.cpp" />
     <ClCompile Include="Src\Object\Dirt\DirtManager.cpp" />
     <ClCompile Include="Src\Object\Dirt\Dirt.cpp" />
@@ -62,7 +62,7 @@
     <ClInclude Include="Src\Object\Item\ItemParam.h" />
     <ClInclude Include="Src\Object\Goal\Goal.h" />
     <ClInclude Include="Src\Common\GameResult.h" />
-    <ClInclude Include="Src\Manager\ItemManager.h" />
+    <ClInclude Include="Src\Object\Item\ItemManager.h" />
     <ClInclude Include="Src\Object\Item\ItemBase.h" />
     <ClInclude Include="Src\Object\Item\ItemMop.h" />
     <ClInclude Include="Src\Scene\PauseScene.h" />
@@ -71,7 +71,7 @@
     <ClInclude Include="Src\Manager\ResourceManager.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyBase.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyGhost.h" />
-    <ClInclude Include="Src\Manager\EnemyManager.h" />
+    <ClInclude Include="Src\Object\Enemy\EnemyManager.h" />
     <ClInclude Include="Src\Object\Collision\BodyCollision.h" />
     <ClInclude Include="Src\Object\Dirt\DirtManager.h" />
     <ClInclude Include="Src\Object\Dirt\Dirt.h" />

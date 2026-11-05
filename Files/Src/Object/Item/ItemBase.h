@@ -68,13 +68,16 @@ public:
 
 	// 性能(JSONで決めた値)
 	int GetAttackPower(void) const;
-	float GetReach(void) const;
+	float GetAttackReach(void) const;
+	float GetAttackRadius(void) const;
 	float GetMoveSpeedRate(void) const;
 	int GetDurability(void) const;
 	float GetAttackVolume(void) const;
 	float GetCleanVolume(void) const;
 	int GetPrice(void) const;
 
+	// 掃除できる距離(カメラから汚れまで)
+	float GetCleanReach(void) const;
 	// 汚れ1つを消すのにかかる時間(秒。掃除速度から求める)
 	float GetCleanTime(void) const;
 

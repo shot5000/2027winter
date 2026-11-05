@@ -28,7 +28,7 @@ void DirtManager::Init(void)
 	deltaTime_ = 0.0f;
 }
 
-int DirtManager::Update(bool canClean, float cleanTime)
+int DirtManager::Update(bool canClean, float cleanTime, float cleanReach)
 {
 	UpdateDeltaTime();
 
@@ -42,7 +42,7 @@ int DirtManager::Update(bool canClean, float cleanTime)
 	auto& ins = InputManager::GetInstance();
 
 	// Eを押していない、または汚れを狙っていないなら、長押しは無効
-	int aimedIndex_ = GetAimedIndex();
+	int aimedIndex_ = GetAimedIndex(cleanReach);
 	if (!ins.IsNew(KEY_INPUT_E) || aimedIndex_ == NO_INDEX)
 	{
 		ResetHold();
@@ -78,9 +78,9 @@ void DirtManager::Draw(void)
 	}
 }
 
-bool DirtManager::IsAiming(void) const
+bool DirtManager::IsAiming(float cleanReach) const
 {
-	return GetAimedIndex() != NO_INDEX;
+	return GetAimedIndex(cleanReach) != NO_INDEX;
 }
 
 int DirtManager::GetCleanCount(void) const
@@ -88,7 +88,7 @@ int DirtManager::GetCleanCount(void) const
 	return cleanCount_;
 }
 
-int DirtManager::GetAimedIndex(void) const
+int DirtManager::GetAimedIndex(float cleanReach) const
 {
 	// 画面の中心
 	int screenW_ = 0;
@@ -105,7 +105,7 @@ int DirtManager::GetAimedIndex(void) const
 
 	// 範囲内で、線に当たっていて、一番近いものを探す
 	int aimedIndex_ = NO_INDEX;
-	float minDist_ = CLEAN_DISTANCE;
+	float minDist_ = cleanReach;
 	for (int i_ = 0; i_ < static_cast<int>(dirts_.size()); i_++)
 	{
 		float dist_ = dirts_[i_].GetDistance(cameraPos_);

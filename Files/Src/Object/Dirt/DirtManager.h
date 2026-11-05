@@ -13,15 +13,12 @@ public:
 
 	// 汚れを置く座標(増やすときは DIRT_COUNT も変える)
 	static constexpr VECTOR DIRT_POS_LIST[DIRT_COUNT] = {
-		{ 0.0f, 0.0f, -300.0f },
+		{ 0.0f, 0.0f, -350.0f },
 		{ 300.0f, 0.0f, -100.0f },
 		{ -300.0f, 0.0f, 0.0f },
 		{ 500.0f, 0.0f, -400.0f },
 		{ -500.0f, 0.0f, -200.0f },
 	};
-
-	// 掃除できる距離
-	static constexpr float CLEAN_DISTANCE = 300.0f;
 
 	// 狙っている汚れがないときの番号
 	static constexpr int NO_INDEX = -1;
@@ -54,15 +51,16 @@ public:
 	// 初期化
 	void Init(void);
 
-	// 更新(掃除できるときだけ、長押しの判定をする。cleanTime は汚れ1つを消す時間)
+	// 更新(掃除できるときだけ、長押しの判定をする)
+	// cleanTime は汚れ1つを消す時間、cleanReach は掃除できる距離
 	// このフレームに汚れを消したら、その報酬(お金)を返す。消していなければ NO_REWARD
-	int Update(bool canClean, float cleanTime);
+	int Update(bool canClean, float cleanTime, float cleanReach);
 
 	// 描画
 	void Draw(void);
 
-	// 汚れを狙っているか
-	bool IsAiming(void) const;
+	// 汚れを狙っているか(cleanReach は掃除できる距離)
+	bool IsAiming(float cleanReach) const;
 
 	// 掃除した数の取得
 	int GetCleanCount(void) const;
@@ -90,8 +88,8 @@ private:
 	// 掃除した数
 	int cleanCount_;
 
-	// 狙っている汚れの番号を返す(なければNO_INDEX)
-	int GetAimedIndex(void) const;
+	// 狙っている汚れの番号を返す(なければ NO_INDEX)
+	int GetAimedIndex(float cleanReach) const;
 
 	// 経過時間の更新
 	void UpdateDeltaTime(void);

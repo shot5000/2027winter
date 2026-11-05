@@ -1,10 +1,10 @@
 #pragma once
 #include "SceneBase.h"
 #include "PauseScene.h"
-#include "../Manager/EnemyManager.h"
+#include "../Object/Enemy/EnemyManager.h"
 #include "../Object/Dirt/DirtManager.h"
 #include "../Object/Goal/Goal.h"
-#include "../Manager/ItemManager.h"
+#include "../Object/Item/ItemManager.h"
 class Grid;
 class Stage;
 class Player;
@@ -40,7 +40,7 @@ public:
 	static constexpr int CENTER_DIV = 2;
 
 	// 操作表示の文字と色
-	static constexpr const char* PROMPT_TEXT = "E長押し";
+	static constexpr const char* PROMPT_TEXT = "掃除する \n\n E長押し";
 	static constexpr const char* DOOR_PROMPT_TEXT = "E長押し：ドアを開ける";
 	static constexpr unsigned int PROMPT_COLOR = 0xffffff;
 

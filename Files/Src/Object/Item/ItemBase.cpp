@@ -108,9 +108,14 @@ int ItemBase::GetAttackPower(void) const
 	return itemParam_.attackPower_;
 }
 
-float ItemBase::GetReach(void) const
+float ItemBase::GetAttackReach(void) const
 {
-	return itemParam_.reach_;
+	return itemParam_.attackReach_;
+}
+
+float ItemBase::GetAttackRadius(void) const
+{
+	return itemParam_.attackRadius_;
 }
 
 float ItemBase::GetMoveSpeedRate(void) const
@@ -136,6 +141,11 @@ float ItemBase::GetCleanVolume(void) const
 int ItemBase::GetPrice(void) const
 {
 	return itemParam_.price_;
+}
+
+float ItemBase::GetCleanReach(void) const
+{
+	return itemParam_.cleanReach_;
 }
 
 float ItemBase::GetCleanTime(void) const

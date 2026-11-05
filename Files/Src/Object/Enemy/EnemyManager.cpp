@@ -1,6 +1,6 @@
 #include <algorithm>
-#include "ItemManager.h"
-#include "../Object/Enemy/EnemyGhost.h"
+#include "../Item/ItemManager.h"
+#include "EnemyGhost.h"
 #include "EnemyManager.h"
 
 EnemyManager::EnemyManager(void)

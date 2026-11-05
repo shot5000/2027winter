@@ -27,7 +27,7 @@ void ItemMop::Draw(void) const
 
 	// 仮の見た目。モデルやエフェクトができたら、ここを差し替える
 	DrawCapsule3D(
-		startPos_, endPos_, RADIUS,
+		startPos_, endPos_, GetAttackRadius(),
 		DRAW_DIV_NUM, DRAW_COLOR, DRAW_COLOR, false);
 
 	// 設定を元に戻す
@@ -45,9 +45,8 @@ bool ItemMop::IsHitBody(
 		return false;
 	}
 
-	// 攻撃のカプセルと、相手のカプセルが重なっているか
 	return HitCheck_Capsule_Capsule(
-		startPos_, endPos_, RADIUS,
+		startPos_, endPos_, GetAttackRadius(),
 		body.GetCapsuleTop(bodyPos), body.GetCapsuleDown(bodyPos),
 		body.GetRadius()) == TRUE;
 }
@@ -60,6 +59,6 @@ void ItemMop::UpdateActive(float rate)
 	startPos_ = VAdd(eye_, VScale(front_, HAND_FRONT_DIST));
 	startPos_.y += HAND_OFFSET_Y;
 
-	// 見ている向きに、リーチの長さだけ、まっすぐ先端を伸ばす
-	endPos_ = VAdd(startPos_, VScale(front_, GetReach()));
+	// 見ている向きに、攻撃のリーチの長さだけ、まっすぐ先端を伸ばす
+	endPos_ = VAdd(startPos_, VScale(front_, GetAttackReach()));
 }
