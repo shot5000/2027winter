@@ -44,6 +44,12 @@ public:
 	// 画面の中心の計算用
 	static constexpr int CENTER_DIV = 2;
 
+	// 攻撃が当たっていないときのダメージ
+	static constexpr int NO_DAMAGE = 0;
+
+	// アイテムを持っていないときの、歩く速さにかける割合
+	static constexpr float NO_ITEM_MOVE_RATE = 1.0f;
+
 	// コンストラクタ
 	ItemManager(void);
 
@@ -77,8 +83,11 @@ public:
 	// 選んでいるアイテムの、汚れ1つを消すのにかかる時間(秒)
 	float GetCleanTime(void) const;
 
-	// どれかの攻撃が、相手の体(カプセル)に当たっているか
-	bool IsHitBody(const BodyCollision& body, const VECTOR& bodyPos) const;
+	// 攻撃が相手の体(カプセル)に当たっていたら、そのダメージを返す(複数なら一番大きい値。当たっていなければ NO_DAMAGE)
+	int GetHitDamage(const BodyCollision& body, const VECTOR& bodyPos) const;
+
+	// 選んでいるアイテムの、歩く速さにかける割合
+	float GetMoveSpeedRate(void) const;
 
 private:
 

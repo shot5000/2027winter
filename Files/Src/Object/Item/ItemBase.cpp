@@ -2,9 +2,10 @@
 #include "../../Manager/SceneManager.h"
 #include "ItemBase.h"
 
-ItemBase::ItemBase(const PARAM& param)
+ItemBase::ItemBase(const PARAM& param, const ItemParam& itemParam)
 {
 	param_ = param;
+	itemParam_ = itemParam;
 	isActive_ = false;
 	activeTimer_ = 0.0f;
 	cooldownTimer_ = 0.0f;
@@ -31,7 +32,7 @@ bool ItemBase::Attack(void)
 
 	isActive_ = true;
 	activeTimer_ = param_.activeTime_;
-	cooldownTimer_ = param_.cooldownTime_;
+	cooldownTimer_ = itemParam_.cooldownTime_;
 	OnStart();
 
 	return true;
@@ -97,14 +98,55 @@ const char* ItemBase::GetName(void) const
 	return param_.name_;
 }
 
-float ItemBase::GetCleanTime(void) const
-{
-	return param_.cleanTime_;
-}
-
 bool ItemBase::IsActive(void) const
 {
 	return isActive_;
+}
+
+int ItemBase::GetAttackPower(void) const
+{
+	return itemParam_.attackPower_;
+}
+
+float ItemBase::GetReach(void) const
+{
+	return itemParam_.reach_;
+}
+
+float ItemBase::GetMoveSpeedRate(void) const
+{
+	return itemParam_.moveSpeedRate_;
+}
+
+int ItemBase::GetDurability(void) const
+{
+	return itemParam_.durability_;
+}
+
+float ItemBase::GetAttackVolume(void) const
+{
+	return itemParam_.attackVolume_;
+}
+
+float ItemBase::GetCleanVolume(void) const
+{
+	return itemParam_.cleanVolume_;
+}
+
+int ItemBase::GetPrice(void) const
+{
+	return itemParam_.price_;
+}
+
+float ItemBase::GetCleanTime(void) const
+{
+	// ë|èúë¨ìxÇ™ë¨Ç¢ÇŸÇ«ÅAÇ©Ç©ÇÈéûä‘ÇÕíZÇ≠Ç»ÇÈ
+	float speed_ = itemParam_.cleanSpeed_;
+	if (speed_ < MIN_CLEAN_SPEED)
+	{
+		speed_ = MIN_CLEAN_SPEED;
+	}
+	return BASE_CLEAN_TIME / speed_;
 }
 
 void ItemBase::OnStart(void)

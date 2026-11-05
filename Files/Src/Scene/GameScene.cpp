@@ -6,6 +6,7 @@
 #include "../Manager/Camera.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Manager/ParamManager.h"
 #include "../Object/Collision/BodyCollision.h"
 #include "../Object/Grid.h"
 #include "../Object/Stage.h"
@@ -28,6 +29,9 @@ GameScene::~GameScene(void)
 
 void GameScene::Init(void)
 {
+	// 敵とアイテムの性能(JSON)を、最新の内容に読み直す(ゲームを始めるたびに)
+	ParamManager::GetInstance().Load();
+
 	// 前のゲームのお金を消して、制限時間を最初に戻す
 	GameResult::Reset();
 	timeLeft_ = TIME_LIMIT;
@@ -122,6 +126,10 @@ void GameScene::Update(void)
 
 	// アイテムの更新(スロットの選択、左クリックでの攻撃)
 	itemManager_.Update();
+
+	// 持っているアイテムによって、歩く速さを変える
+	SceneManager::GetInstance().GetCamera()->SetMoveSpeedRate(
+		itemManager_.GetMoveSpeedRate());
 
 	// 汚れの掃除(掃除できるアイテムを持っているとき、Eの長押し)。消したらお金を得る
 	int reward_ = dirtManager_->Update(

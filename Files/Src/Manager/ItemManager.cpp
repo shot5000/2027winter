@@ -163,17 +163,34 @@ float ItemManager::GetCleanTime(void) const
 	return selected_->GetCleanTime();
 }
 
-bool ItemManager::IsHitBody(
+int ItemManager::GetHitDamage(
 	const BodyCollision& body, const VECTOR& bodyPos) const
 {
+	int damage_ = NO_DAMAGE;
 	for (const auto& item_ : items_)
 	{
-		if (item_ != nullptr && item_->IsHitBody(body, bodyPos))
+		if (item_ == nullptr || !item_->IsHitBody(body, bodyPos))
 		{
-			return true;
+			continue;
+		}
+
+		// •¡”‚ÌUŒ‚‚ª“–‚½‚Á‚Ä‚¢‚é‚Æ‚«‚ÍA‘å‚«‚¢‚Ù‚¤‚ðŽg‚¤
+		if (item_->GetAttackPower() > damage_)
+		{
+			damage_ = item_->GetAttackPower();
 		}
 	}
-	return false;
+	return damage_;
+}
+
+float ItemManager::GetMoveSpeedRate(void) const
+{
+	ItemBase* selected_ = GetSelectedItem();
+	if (selected_ == nullptr)
+	{
+		return NO_ITEM_MOVE_RATE;
+	}
+	return selected_->GetMoveSpeedRate();
 }
 
 ItemBase* ItemManager::GetSelectedItem(void) const

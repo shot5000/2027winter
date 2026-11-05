@@ -7,30 +7,24 @@ class ItemMop : public ItemBase
 
 public:
 
+	// 性能(JSON)の名前
+	static constexpr const char* PARAM_ID = "mop";
+
 	// 名前
 	static constexpr const char* NAME = "モップ";
 
-	// 攻撃が出ている時間と、次に攻撃できるまでの待ち時間(秒)
+	// 攻撃が出ている時間(秒)
 	static constexpr float ACTIVE_TIME = 0.25f;
-	static constexpr float COOLDOWN_TIME = 0.5f;
 
-	// 汚れ1つを消すのにかかる長押しの時間(秒)
-	static constexpr float CLEAN_TIME = 1.0f;
-
-	// アイテムごとの値(攻撃も掃除もできる)
+	// アイテムごとに、コードで決める値(攻撃も掃除もできる)
 	static constexpr ItemBase::PARAM ITEM_PARAM = {
 		NAME,
 		ItemBase::KIND::BOTH,
-		ACTIVE_TIME,
-		COOLDOWN_TIME,
-		CLEAN_TIME
+		ACTIVE_TIME
 	};
 
 	// 攻撃(カプセル)の半径
-	static constexpr float RADIUS = 15.0f;
-
-	// 持ち手から先端までの長さ(カプセルの両端の球の中心の間)
-	static constexpr float LENGTH = 30.0f;
+	static constexpr float RADIUS = 30.0f;
 
 	// 持ち手の位置：目の位置から、正面へ離す距離と、下へ下げる高さ
 	static constexpr float HAND_FRONT_DIST = 30.0f;
@@ -56,7 +50,7 @@ public:
 
 protected:
 
-	// 攻撃が出ている間の処理(見ている向きに、まっすぐ伸ばす)
+	// 攻撃が出ている間の処理(見ている向きに、リーチの長さだけ、まっすぐ伸ばす)
 	void UpdateActive(float rate) override;
 
 private:

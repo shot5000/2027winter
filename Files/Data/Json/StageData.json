@@ -1,0 +1,8 @@
+// StageData.json
+{
+  "timeLimitSec": 300,
+  "goal": { "pos": [0.0, 0.0, 1200.0], "openTime": 3.0 },
+  "dirtReward": 100,
+  "dirts": [ [0.0, 0.0, -300.0], [300.0, 0.0, -100.0] ],
+  "enemies": [ { "type": "ghost", "pos": [0.0, 200.0, 600.0], "angleDeg": 0.0 } ]
+}

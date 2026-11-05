@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Manager\ParamManager.cpp" />
+    <ClCompile Include="Src\Object\Enemy\EnemyParam.cpp" />
+    <ClCompile Include="Src\Object\Item\ItemParam.cpp" />
     <ClCompile Include="Src\Object\Goal\Goal.cpp" />
     <ClCompile Include="Src\Common\GameResult.cpp" />
     <ClCompile Include="Src\Manager\ItemManager.cpp" />
@@ -54,6 +57,9 @@
     <ClCompile Include="Src\Object\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Manager\ParamManager.h" />
+    <ClInclude Include="Src\Object\Enemy\EnemyParam.h" />
+    <ClInclude Include="Src\Object\Item\ItemParam.h" />
     <ClInclude Include="Src\Object\Goal\Goal.h" />
     <ClInclude Include="Src\Common\GameResult.h" />
     <ClInclude Include="Src\Manager\ItemManager.h" />

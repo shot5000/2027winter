@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include "../Collision/BodyCollision.h"
 #include "EnemySensor.h"
+#include "EnemyParam.h"
 
 class EnemyBase
 {
@@ -15,7 +16,7 @@ public:
 	static constexpr int DEFAULT_HP = 3;
 
 	// 攻撃を受けて怯む時間(秒)。この間は動かず、続けてダメージも受けない
-	static constexpr float STUN_TIME = 0.5f;
+	static constexpr float STUN_TIME = 0.2f;
 
 	// 赤く点滅する間隔(秒)
 	static constexpr float BLINK_INTERVAL = 0.1f;
@@ -70,6 +71,9 @@ public:
 	// 当たり判定の取得
 	const BodyCollision& GetBody(void) const;
 
+	// 攻撃力(プレイヤーに与えるダメージ。プレイヤーに体力ができたら使う)
+	int GetAttackPower(void) const;
+
 protected:
 
 	// 座標(足元)
@@ -87,14 +91,27 @@ protected:
 	// 索敵(使う敵だけ、子クラスのコンストラクタで Init する)
 	EnemySensor sensor_;
 
+	// 索敵中と検知中の、移動の速さ(1秒あたりに進む距離)
+	float searchSpeed_;
+	float chaseSpeed_;
+
+	// 攻撃力
+	int attackPower_;
+
+	// JSONで決めた性能を、まとめて反映する(体力、速さ、攻撃力)
+	void ApplyParam(const EnemyParam& param);
+
+	// 向いている方向へ、真っすぐ進む(速さが0以下なら動かない)
+	void MoveForward(float speed);
+
 	// 敵ごとの動き。判定の前に呼ばれる(怯んでいる間は呼ばれない)
 	// 初期では、索敵の状態に応じて UpdateSearch / UpdateChase を呼ぶ
 	virtual void UpdateProcess(const VECTOR& targetPos);
 
-	// 索敵中の動き(初期では何もしない=その場で停止)
+	// 索敵中の動き(初期では、索敵時の速さで前へ進む。速さが0ならその場で停止)
 	virtual void UpdateSearch(const VECTOR& targetPos);
 
-	// 検知中の動き(初期では何もしない)
+	// 検知中の動き(初期では、発見時の速さで、相手のほうへ真っすぐ進む)
 	virtual void UpdateChase(const VECTOR& targetPos);
 
 	// 相手のほうへ頭を向けて、真っすぐ進む

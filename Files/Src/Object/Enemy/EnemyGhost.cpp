@@ -1,3 +1,4 @@
+#include "../../Manager/ParamManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "EnemyGhost.h"
 
@@ -6,9 +7,19 @@ EnemyGhost::EnemyGhost(const VECTOR& pos, float angleY)
 {
 	modelId_ = Resource::INVALID_HANDLE;
 
-	// このモデルの頭の向きと、索敵の大きさを決める
+	// JSONで決めた、体力・速さ・攻撃力を反映する
+	const EnemyParam& param_ = ParamManager::GetInstance().GetEnemy(PARAM_ID);
+	ApplyParam(param_);
+
+	// このモデルの頭の向きと、JSONで決めた索敵の大きさを使う
 	frontOffset_ = FRONT_ANGLE_OFFSET;
-	sensor_.Init(SENSOR_PARAM);
+	EnemySensor::PARAM sensorParam_ = {
+		param_.fanRange_,
+		param_.fanAngleDeg_ * EnemyParam::DEG_TO_RAD,
+		param_.chaseRange_,
+		SEARCH_ORIGIN_DIST
+	};
+	sensor_.Init(sensorParam_);
 }
 
 EnemyGhost::~EnemyGhost(void)
@@ -51,10 +62,4 @@ void EnemyGhost::Release(void)
 	ResourceManager::GetInstance().DeleteModelDuplicate(
 		ResourceManager::SRC::ENEMY_GHOST, modelId_);
 	modelId_ = Resource::INVALID_HANDLE;
-}
-
-void EnemyGhost::UpdateChase(const VECTOR& targetPos)
-{
-	// プレイヤーのほうへ真っすぐ向かう
-	ChaseStraight(targetPos, CHASE_SPEED);
 }

@@ -13,7 +13,8 @@ EnemyBase::EnemyBase(
 	body_.Init(bodyParam);
 	body_.SetAngleY(angleY_);
 	isAlive_ = true;
-	hp_ = DEFAULT_HP;
+	// 性能は、初期値を入れておく(子クラスが、JSONの値で上書きする)
+	ApplyParam(EnemyParam());
 	stunTimer_ = 0.0f;
 }
 
@@ -100,6 +101,30 @@ const BodyCollision& EnemyBase::GetBody(void) const
 	return body_;
 }
 
+int EnemyBase::GetAttackPower(void) const
+{
+	return attackPower_;
+}
+
+void EnemyBase::ApplyParam(const EnemyParam& param)
+{
+	hp_ = param.hp_;
+	searchSpeed_ = param.searchSpeed_;
+	chaseSpeed_ = param.chaseSpeed_;
+	attackPower_ = param.attackPower_;
+}
+
+void EnemyBase::MoveForward(float speed)
+{
+	if (speed <= 0.0f)
+	{
+		return;
+	}
+
+	// 向いている方向へ、速さ×経過時間だけ進む
+	pos_ = VAdd(pos_, VScale(GetFrontDir(), speed * GetDeltaTime()));
+}
+
 void EnemyBase::UpdateProcess(const VECTOR& targetPos)
 {
 	// 索敵を更新して、状態に応じた動きを呼ぶ
@@ -116,10 +141,14 @@ void EnemyBase::UpdateProcess(const VECTOR& targetPos)
 
 void EnemyBase::UpdateSearch(const VECTOR& targetPos)
 {
+	// 索敵中は、索敵時の速さで、向いている方向へ進む(速さが0なら、その場で停止)
+	MoveForward(searchSpeed_);
 }
 
 void EnemyBase::UpdateChase(const VECTOR& targetPos)
 {
+	// 検知中は、発見時の速さで、相手のほうへ真っすぐ向かう
+	ChaseStraight(targetPos, chaseSpeed_);
 }
 
 void EnemyBase::ChaseStraight(const VECTOR& targetPos, float speed)

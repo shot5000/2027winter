@@ -6,6 +6,9 @@ class EnemyGhost : public EnemyBase
 
 public:
 
+	// 性能(JSON)の名前
+	static constexpr const char* PARAM_ID = "ghost";
+
 	// 体の半径
 	static constexpr float BODY_RADIUS = 30.0f;
 
@@ -44,24 +47,6 @@ public:
 	// 足元の中心から、頭の先までの距離(扇の要の位置)
 	static constexpr float SEARCH_ORIGIN_DIST = BODY_HALF_LENGTH - BODY_SHIFT_Z;
 
-	// 索敵範囲(扇)の半径と角度
-	static constexpr float SEARCH_RANGE = 500.0f;
-	static constexpr float SEARCH_ANGLE = 150.0f * DX_PI_F / 180.0f;
-
-	// 追跡範囲(円)の半径
-	static constexpr float CHASE_RANGE = 800.0f;
-
-	// 索敵の大きさ
-	static constexpr EnemySensor::PARAM SENSOR_PARAM = {
-		SEARCH_RANGE,
-		SEARCH_ANGLE,
-		CHASE_RANGE,
-		SEARCH_ORIGIN_DIST
-	};
-
-	// 追いかける速さ(1秒あたりに進む距離。プレイヤーの歩きは180、ダッシュは360)
-	static constexpr float CHASE_SPEED = 200.0f;
-
 	// コンストラクタ(置く座標と、最初の向きを受け取る)
 	EnemyGhost(const VECTOR& pos, float angleY);
 
@@ -76,11 +61,6 @@ public:
 
 	// 解放
 	void Release(void) override;
-
-protected:
-
-	// 検知中の動き(真っすぐ追いかける)
-	void UpdateChase(const VECTOR& targetPos) override;
 
 private:
 

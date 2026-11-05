@@ -1,0 +1,11 @@
+{
+  "ghost": {
+    "hp": 10,
+    "searchSpeed": 0.0,
+    "chaseSpeed": 200.0,
+    "fanRange": 600.0,
+    "fanAngleDeg": 150.0,
+    "chaseRange": 800.0,
+    "attackPower": 1
+  }
+}

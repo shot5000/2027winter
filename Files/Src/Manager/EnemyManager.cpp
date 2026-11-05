@@ -77,12 +77,13 @@ bool EnemyManager::IsHitPlayer(
 
 void EnemyManager::DamageHitEnemies(const ItemManager& itemManager)
 {
-	// UŒ‚‚É“–‚½‚Á‚Ä‚¢‚é“G‚ÉAƒ_ƒ[ƒW‚ð—^‚¦‚é
+	// UŒ‚‚É“–‚½‚Á‚Ä‚¢‚é“G‚ÉA‚»‚ÌUŒ‚‚Ìƒ_ƒ[ƒW‚ð—^‚¦‚é
 	for (auto& enemy_ : enemies_)
 	{
-		if (itemManager.IsHitBody(enemy_->GetBody(), enemy_->GetPos()))
+		int damage_ = itemManager.GetHitDamage(enemy_->GetBody(), enemy_->GetPos());
+		if (damage_ > ItemManager::NO_DAMAGE)
 		{
-			enemy_->Damage(ATTACK_DAMAGE);
+			enemy_->Damage(damage_);
 		}
 	}
 

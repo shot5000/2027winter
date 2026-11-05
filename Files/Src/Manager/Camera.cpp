@@ -10,6 +10,7 @@ Camera::Camera(void)
 	// カメラの上方向は x = 0.0f, y = 1.0f, z = 0.0f
 	// 右上位置からZ軸のプラス方向を見るようなカメラ
 	mode_ = MODE::NONE;
+	moveSpeedRate_ = DEFAULT_MOVE_RATE;
 }
 
 Camera::~Camera(void)
@@ -150,8 +151,8 @@ void Camera::MoveXYZDirection(void)
 		speed_ = DASH_SPEED;
 	}
 
-	// 方向×1秒あたりの速さ×経過時間で、FPSに関係なく同じ距離だけ進む
-	pos_ = VAdd(pos_, VScale(moveDir_, speed_ * deltaTime_));
+	// 方向×1秒あたりの速さ×アイテムの割合×経過時間で、FPSに関係なく同じ距離だけ進む
+	pos_ = VAdd(pos_, VScale(moveDir_, speed_ * moveSpeedRate_ * deltaTime_));
 }
 
 const VECTOR& Camera::GetPos(void) const
@@ -246,9 +247,16 @@ void Camera::ResetState(void)
 	// 経過時間の計測もやり直す(長く測っていないと、最初の1フレームが大きくなる)
 	preTime_ = GetNowHiPerformanceCount();
 	deltaTime_ = 0.0f;
+
+	moveSpeedRate_ = DEFAULT_MOVE_RATE;
 }
 
 const BodyCollision& Camera::GetBody(void) const
 {
 	return body_;
+}
+
+void Camera::SetMoveSpeedRate(float rate)
+{
+	moveSpeedRate_ = rate;
 }

@@ -2,6 +2,7 @@
 #include "Manager/InputManager.h"
 #include "Manager/ResourceManager.h"
 #include "Manager/SceneManager.h"
+#include "Manager/ParamManager.h"
 #include "Application.h"
 
 Application* Application::instance_ = nullptr;
@@ -55,6 +56,10 @@ void Application::Init(void)
 	SetUseDirectInputFlag(true);
 	InputManager::CreateInstance();
 
+	// 性能データ(JSON)の管理初期化(敵やアイテムを作る前に、読み込んでおく)
+	ParamManager::CreateInstance();
+	ParamManager::GetInstance().Load();
+
 	// リソース管理初期化(シーンが読み込みを始める前に作っておく)
 	ResourceManager::CreateInstance();
 	ResourceManager::GetInstance().Init();
@@ -95,6 +100,9 @@ void Application::Destroy(void)
 
 	// リソース解放(シーンが消えたあとに、モデルなどを消す)
 	ResourceManager::DeleteInstance();
+
+	// 性能データの解放
+	ParamManager::DeleteInstance();
 
 	// 入力制御解放
 	InputManager::GetInstance().Destroy();

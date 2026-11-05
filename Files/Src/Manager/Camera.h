@@ -44,7 +44,7 @@ public:
 	static constexpr VECTOR DIR_RIGHT = { 1.0f, 0.0f, 0.0f };
 
 	// 移動速度
-	static constexpr float MOVE_SPEED = 180.0f; // 歩行
+	static constexpr float MOVE_SPEED = 150.0f; // 歩行
 	static constexpr float DASH_SPEED = 360.0f; // ダッシュ
 
 	// マイクロ秒を秒に直すための割る数
@@ -55,6 +55,9 @@ public:
 
 	// ジャンプの初速(1秒あたりに上がる距離)
 	static constexpr float JUMP_SPEED = 450.0f;
+
+	// 歩く速さにかける割合の、初期値
+	static constexpr float DEFAULT_MOVE_RATE = 1.0f;
 
 	// カメラモード
 	enum class MODE
@@ -116,6 +119,9 @@ public:
 	// 当たり判定の取得(敵との接触判定で使う)
 	const BodyCollision& GetBody(void) const;
 
+	// 歩く速さにかける割合を決める(持っているアイテムで変わる)
+	void SetMoveSpeedRate(float rate);
+
 private:
 
 	// カメラモード
@@ -135,5 +141,8 @@ private:
 
 	// 当たり判定
 	BodyCollision body_;
+
+	// 歩く速さにかける割合
+	float moveSpeedRate_;
 
 };

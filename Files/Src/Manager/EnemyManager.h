@@ -15,7 +15,7 @@ public:
 
 	// EnemyGhostを置く座標(増やすときは GHOST_COUNT も変える)
 	static constexpr VECTOR GHOST_POS_LIST[GHOST_COUNT] = {
-		{ -450.0f, 100.0f, 0.0f },
+		{ -600.0f, 100.0f, 0.0f },
 		{ 300.0f, 100.0f, 200.0f },
 	};
 
@@ -24,9 +24,6 @@ public:
 		0.0f,
 		0.0f,
 	};
-
-	// 攻撃1回で受けるダメージ
-	static constexpr int ATTACK_DAMAGE = 1;
 
 	// 当たり判定を表示するか(確認が終わったら false にする)
 	static constexpr bool DEBUG_DRAW = true;

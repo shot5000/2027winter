@@ -1,6 +1,7 @@
 #pragma once
 #include <DxLib.h>
 #include "../Collision/BodyCollision.h"
+#include "ItemParam.h"
 
 class ItemBase
 {
@@ -15,22 +16,26 @@ public:
 		BOTH,   // 攻撃も掃除もできる
 	};
 
-	// アイテムごとに決める値
+	// アイテムごとに、コードで決める値
 	struct PARAM
 	{
 		const char* name_;		// 名前(スロットに表示する)
 		KIND kind_;				// できること
 		float activeTime_;		// 攻撃が出ている時間(秒)。攻撃できないアイテムは使わない
-		float cooldownTime_;	// 次に攻撃できるまでの待ち時間(秒)。同上
-		float cleanTime_;		// 汚れ1つを消すのにかかる長押しの時間(秒)。掃除できないアイテムは使わない
 	};
 
 	// 攻撃の経過の割合の、最小と最大
 	static constexpr float RATE_MIN = 0.0f;
 	static constexpr float RATE_MAX = 1.0f;
 
-	// コンストラクタ(アイテムごとの値を受け取る)
-	ItemBase(const PARAM& param);
+	// 掃除速度が1.0のときに、汚れ1つを消すのにかかる長押しの時間(秒)
+	static constexpr float BASE_CLEAN_TIME = 1.0f;
+
+	// 掃除速度の下限(0で割らないようにする)
+	static constexpr float MIN_CLEAN_SPEED = 0.01f;
+
+	// コンストラクタ(コードで決める値と、JSONで決めた性能を受け取る)
+	ItemBase(const PARAM& param, const ItemParam& itemParam);
 
 	// デストラクタ
 	virtual ~ItemBase(void);
@@ -58,11 +63,20 @@ public:
 	// 名前
 	const char* GetName(void) const;
 
-	// 汚れ1つを消すのにかかる時間(秒)
-	float GetCleanTime(void) const;
-
 	// 攻撃が出ているか
 	bool IsActive(void) const;
+
+	// 性能(JSONで決めた値)
+	int GetAttackPower(void) const;
+	float GetReach(void) const;
+	float GetMoveSpeedRate(void) const;
+	int GetDurability(void) const;
+	float GetAttackVolume(void) const;
+	float GetCleanVolume(void) const;
+	int GetPrice(void) const;
+
+	// 汚れ1つを消すのにかかる時間(秒。掃除速度から求める)
+	float GetCleanTime(void) const;
 
 protected:
 
@@ -75,8 +89,11 @@ protected:
 
 private:
 
-	// アイテムごとの値
+	// アイテムごとに、コードで決める値
 	PARAM param_;
+
+	// JSONで決めた性能
+	ItemParam itemParam_;
 
 	// 攻撃が出ているか
 	bool isActive_;

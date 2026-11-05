@@ -1,7 +1,9 @@
+#include "../../Manager/ParamManager.h"
 #include "../../Utility/AsoUtility.h"
 #include "ItemMop.h"
 
-ItemMop::ItemMop(void) : ItemBase(ITEM_PARAM)
+ItemMop::ItemMop(void)
+	: ItemBase(ITEM_PARAM, ParamManager::GetInstance().GetItem(PARAM_ID))
 {
 	startPos_ = AsoUtility::VECTOR_ZERO;
 	endPos_ = AsoUtility::VECTOR_ZERO;
@@ -58,6 +60,6 @@ void ItemMop::UpdateActive(float rate)
 	startPos_ = VAdd(eye_, VScale(front_, HAND_FRONT_DIST));
 	startPos_.y += HAND_OFFSET_Y;
 
-	// 見ている向きに、まっすぐ先端を伸ばす
-	endPos_ = VAdd(startPos_, VScale(front_, LENGTH));
+	// 見ている向きに、リーチの長さだけ、まっすぐ先端を伸ばす
+	endPos_ = VAdd(startPos_, VScale(front_, GetReach()));
 }
