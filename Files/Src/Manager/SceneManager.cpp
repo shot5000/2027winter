@@ -59,8 +59,8 @@ void SceneManager::Init3D(void)
 
 	// 背景色設定
 	SetBackgroundColor(
-		BACKGROUND_COLOR_R, 
-		BACKGROUND_COLOR_G, 
+		BACKGROUND_COLOR_R,
+		BACKGROUND_COLOR_G,
 		BACKGROUND_COLOR_B);
 
 	// Zバッファを有効にする
@@ -75,8 +75,16 @@ void SceneManager::Init3D(void)
 	// ライトの設定
 	SetUseLighting(true);
 
-	// 正面から斜め下に向かったライト
-	ChangeLightTypeDir({ 0.00f, -1.00f, 1.00f });
+	// ライトの向き
+	ChangeLightTypeDir(LIGHT_DIRECTION);
+
+	// 全体の明るさ(光が当たらない面も真っ黒にならない)
+	SetGlobalAmbientLight(
+		GetColorF(LIGHT_AMBIENT, LIGHT_AMBIENT, LIGHT_AMBIENT, LIGHT_ALPHA));
+
+	// 光が当たる面の明るさ
+	SetLightDifColor(
+		GetColorF(LIGHT_DIFFUSE, LIGHT_DIFFUSE, LIGHT_DIFFUSE, LIGHT_ALPHA));
 
 }
 

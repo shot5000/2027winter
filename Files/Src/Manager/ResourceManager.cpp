@@ -43,7 +43,7 @@ void ResourceManager::Init(void)
 {
 	// ステージ
 	resourcesMap_.emplace(SRC::STAGE,
-		std::make_unique<Resource>(Resource::TYPE::MODEL, "Stage.mv1"));
+		std::make_unique<Resource>(Resource::TYPE::MODEL, "School.mv1"));
 
 	// エネミー
 	resourcesMap_.emplace(SRC::ENEMY_GHOST,

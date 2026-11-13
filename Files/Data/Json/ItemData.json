@@ -1,7 +1,7 @@
 {
   "mop": {
     "attackPower": 3,
-    "cooldownTime": 0.5,
+    "cooldownTime": 1.0,
     "attackReach": 30.0,
     "attackRadius": 15.0,
     "cleanSpeed": 1.0,

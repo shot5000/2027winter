@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <DxLib.h>
 class SceneBase;
 class Fader;
 class Camera;
@@ -16,6 +17,11 @@ public:
 
 	// ディレクショナルライトの方向
 	static constexpr VECTOR LIGHT_DIRECTION = { 0.3f, -0.7f, 0.8f };
+
+	// ライトの明るさ(0.0f?1.0f)
+	static constexpr float LIGHT_AMBIENT = 0.01f;
+	static constexpr float LIGHT_DIFFUSE = 0.9f;
+	static constexpr float LIGHT_ALPHA = 1.0f;
 
 	// シーン管理用
 	enum class SCENE_ID

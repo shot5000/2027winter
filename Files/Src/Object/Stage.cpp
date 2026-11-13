@@ -4,6 +4,7 @@
 
 Stage::Stage(void)
 {
+	modelId_ = -1;
 }
 
 Stage::~Stage(void)
@@ -16,14 +17,21 @@ void Stage::Init(void)
 	modelId_ = ResourceManager::GetInstance().Load(
 		ResourceManager::SRC::STAGE).handleId_;
 
-	// ステージモデルの位置
-	pos_ = VGet(0.0f, 80.0f, 0.0f);
+	// 大きさと位置を決める(当たり判定を作る前に行う)
+	MV1SetScale(modelId_, VGet(SCALE, SCALE, SCALE));
+	MV1SetPosition(modelId_, POS);
 
-	// ステージモデルの位置設定
-	MV1SetPosition(modelId_, pos_);
+	// 光が当たらない面も真っ黒にならないように、環境光の色を上げる
+	int materialNum_ = MV1GetMaterialNum(modelId_);
+	for (int i_ = 0; i_ < materialNum_; i_++)
+	{
+		MV1SetMaterialAmbColor(modelId_, i_,
+			GetColorF(MATERIAL_AMBIENT, MATERIAL_AMBIENT, MATERIAL_AMBIENT, MATERIAL_ALPHA));
+	}
 
 	// 当たり判定用の情報を作る
-	MV1SetupCollInfo(modelId_, BodyCollision::ALL_FRAME);
+	MV1SetupCollInfo(modelId_, BodyCollision::ALL_FRAME,
+		COLL_DIV_X, COLL_DIV_Y, COLL_DIV_Z);
 }
 
 void Stage::Update(void)
