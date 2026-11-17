@@ -5,6 +5,7 @@
 #include "../Object/Dirt/DirtManager.h"
 #include "../Object/Goal/Goal.h"
 #include "../Object/Item/ItemManager.h"
+#include "../Object/Stage/DoorManager.h"
 class Grid;
 class Stage;
 class Player;
@@ -41,7 +42,7 @@ public:
 
 	// 操作表示の文字と色
 	static constexpr const char* PROMPT_TEXT = "掃除する \n\n E長押し";
-	static constexpr const char* DOOR_PROMPT_TEXT = "E長押し：ドアを開ける";
+	static constexpr const char* GOAL_PROMPT_TEXT = "E長押し：ドアを開ける";
 	static constexpr unsigned int PROMPT_COLOR = 0xffffff;
 
 	// 操作表示を照準からどれだけ下に出すか
@@ -72,6 +73,13 @@ public:
 	// タイトルに戻る確認の文字
 	static constexpr const char* BACK_TEXT = "タイトルに戻りますか？";
 
+	// 経過時間の計算(マイクロ秒→秒)と、1フレームの上限
+	static constexpr float MICRO_SEC_TO_SEC = 1000000.0f;
+	static constexpr float DELTA_TIME_MAX = 0.1f;
+
+	// 扉の表示の文字
+	static constexpr const char* DOOR_PROMPT_TEXT = "Eで開閉";
+
 	// コンストラクタ
 	GameScene(void);
 
@@ -97,6 +105,12 @@ public:
 
 	// 残り時間の描画
 	void DrawTime(void);
+
+	// 扉の更新(視線の先の扉の判定と、Eキーでの開閉)
+	void UpdateDoor(void);
+
+	// 扉の表示の描画
+	void DrawDoorPrompt(void);
 
 private:
 
@@ -127,13 +141,22 @@ private:
 	// プレイヤー
 	Player* player_;
 
+	// 扉の管理
+	DoorManager doorMng_;
+
+	// 視線の先の扉の番号(なければ-1)
+	int aimedDoor_;
+
+	// 前のフレームの時刻
+	LONGLONG preTime_;
+
 	// 確認の選択肢の更新
 	void UpdateBackMenu(void);
 
 	// 照準の下に、操作表示の文字を出す
 	void DrawPromptText(const char* text);
 
-	// ドアを開ける長押しのゲージの描画
-	void DrawDoorGauge(void);
+	// ゴールを開ける長押しのゲージの描画
+	void DrawGoalGauge(void);
 
 };

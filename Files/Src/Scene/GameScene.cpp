@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <vector>
 #include <DxLib.h>
 #include "../Common/GameResult.h"
 #include "../Manager/Camera.h"
@@ -21,6 +22,8 @@ GameScene::GameScene(void) : SceneBase(), backMenu_(BACK_TEXT)
 	dirtManager_ = nullptr;
 	enemyManager_ = nullptr;
 	timeLeft_ = TIME_LIMIT;
+	aimedDoor_ = -1;
+	preTime_ = 0;
 }
 
 GameScene::~GameScene(void)
@@ -69,6 +72,11 @@ void GameScene::Init(void)
 
 	// 当たり判定にステージのモデルを教える(カメラも敵も共通)
 	BodyCollision::SetStageModel(stage_->GetModelId());
+
+	// 扉(ステージのモデルが決まってから)
+	doorMng_.Init(stage_->GetModelId());
+	aimedDoor_ = -1;
+	preTime_ = GetNowHiPerformanceCount();
 }
 
 void GameScene::Update(void)
@@ -148,6 +156,9 @@ void GameScene::Update(void)
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 	enemyManager_->Update(camera_->GetPos());
 
+	// 扉の更新
+	UpdateDoor();
+
 	// 攻撃に当たった敵に、ダメージを与える
 	enemyManager_->DamageHitEnemies(itemManager_);
 
@@ -199,6 +210,7 @@ void GameScene::Draw(void)
 	{
 		DrawCrosshair();
 		DrawPrompt();
+		DrawDoorPrompt();
 	}
 
 	// 確認の選択肢(出ているときだけ描かれる。いちばん手前)
@@ -210,6 +222,9 @@ void GameScene::Release(void)
 	// グリッド解放
 	grid_->Release();
 	delete grid_;
+
+	// 扉(ステージを消す前に)
+	doorMng_.Release();
 
 	// ステージ解放
 	stage_->Release();
@@ -254,8 +269,8 @@ void GameScene::DrawPrompt(void)
 	// ドアを狙っているときは、ドアを開ける案内(どのアイテムでも開けられる)
 	if (goal_.IsAiming())
 	{
-		DrawPromptText(DOOR_PROMPT_TEXT);
-		DrawDoorGauge();
+		DrawPromptText(GOAL_PROMPT_TEXT);
+		DrawGoalGauge();
 		return;
 	}
 
@@ -315,6 +330,66 @@ void GameScene::DrawTime(void)
 	DrawString((screenW_ - textW_) / CENTER_DIV, TIME_POS_Y, text_, TIME_COLOR);
 }
 
+void GameScene::UpdateDoor(void)
+{
+	// 経過時間
+	LONGLONG nowTime_ = GetNowHiPerformanceCount();
+	float deltaTime_ = static_cast<float>(nowTime_ - preTime_) / MICRO_SEC_TO_SEC;
+	preTime_ = nowTime_;
+	if (deltaTime_ > DELTA_TIME_MAX)
+	{
+		deltaTime_ = DELTA_TIME_MAX;
+	}
+
+	Camera* camera_ = SceneManager::GetInstance().GetCamera();
+
+	// 扉の近くにいる人(閉めるときに挟まないように)
+	std::vector<DoorManager::OCCUPANT> occupants_;
+	occupants_.push_back({ &camera_->GetBody(), camera_->GetPos() });
+	doorMng_.Update(deltaTime_, occupants_);
+
+	// 視線の向き(カメラの角度から作る)
+	const VECTOR& angles_ = camera_->GetAngles();
+	MATRIX mat_ = MMult(MGetRotX(angles_.x), MGetRotY(angles_.y));
+	VECTOR dir_ = VTransform(VGet(0.0f, 0.0f, 1.0f), mat_);
+
+	// 汚れやゴールを狙っているときは、そちらを優先する
+	aimedDoor_ = -1;
+	bool isAimDirt_ = itemManager_.CanClean()
+		&& dirtManager_->IsAiming(itemManager_.GetCleanReach());
+	if (isAimDirt_ || goal_.IsAiming())
+	{
+		return;
+	}
+	aimedDoor_ = doorMng_.FindAimed(camera_->GetPos(), dir_);
+
+	// Eキーで開け閉め
+	if (aimedDoor_ >= 0 && InputManager::GetInstance().IsTrgDown(KEY_INPUT_E))
+	{
+		doorMng_.Toggle(aimedDoor_);
+	}
+}
+
+void GameScene::DrawDoorPrompt(void)
+{
+	if (aimedDoor_ < 0)
+	{
+		return;
+	}
+
+	// 画面の中心に文字をそろえて、照準の少し下に出す
+	int screenW_ = 0;
+	int screenH_ = 0;
+	GetDrawScreenSize(&screenW_, &screenH_);
+	int centerX_ = screenW_ / CENTER_DIV;
+	int centerY_ = screenH_ / CENTER_DIV;
+
+	int textW_ = GetDrawStringWidth(
+		DOOR_PROMPT_TEXT, static_cast<int>(strlen(DOOR_PROMPT_TEXT)));
+	DrawString(centerX_ - textW_ / CENTER_DIV, centerY_ + PROMPT_OFFSET_Y,
+		DOOR_PROMPT_TEXT, PROMPT_COLOR);
+}
+
 void GameScene::UpdateBackMenu(void)
 {
 	switch (backMenu_.Update())
@@ -349,7 +424,7 @@ void GameScene::DrawPromptText(const char* text)
 	DrawString(drawX_, centerY_ + PROMPT_OFFSET_Y, text, PROMPT_COLOR);
 }
 
-void GameScene::DrawDoorGauge(void)
+void GameScene::DrawGoalGauge(void)
 {
 	// 長押しを始めていないときは出さない
 	float rate_ = goal_.GetHoldRate();
