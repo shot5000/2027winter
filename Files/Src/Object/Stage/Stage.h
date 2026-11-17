@@ -1,12 +1,14 @@
 #pragma once
-#include "Collision/BodyCollision.h"
+#include <string>
+#include <vector>
+#include "../Collision/BodyCollision.h"
 #include <DxLib.h>
 
 class Stage
 {
 public:
 
-	// モデルの拡大率(1m = 73)
+	// モデルの拡大率(1m = 100)
 	static constexpr float SCALE = 1.0f;
 
 	// モデルの位置(床の高さがY=0)
@@ -20,6 +22,9 @@ public:
 	// マテリアルの環境光の色(1.0fで、全体の明るさがそのまま反映される)
 	static constexpr float MATERIAL_AMBIENT = 1.0f;
 	static constexpr float MATERIAL_ALPHA = 1.0f;
+
+	// ステージの壁や床になるフレームの名前の頭(扉は別に扱う)
+	static constexpr const char* STAGE_FRAME_PREFIX = "Stage_";
 
 	Stage(void);
 	~Stage(void);

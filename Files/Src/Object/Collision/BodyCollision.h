@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <DxLib.h>
 
 class BodyCollision
@@ -40,6 +41,9 @@ public:
 	// 壁から離れる位置の余裕(ぴったりだと、触れているかの判定が毎回ぶれる)
 	static constexpr float PUSH_MARGIN = 0.1f;
 
+	// 四方を調べる線の長さ(個室は2mなので少し長め)
+	static constexpr float ENCLOSED_RAY_LEN = 210.0f;
+
 	// 体の形(基準座標からのずれで指定する)
 	struct PARAM
 	{
@@ -60,6 +64,16 @@ public:
 
 	// ステージのモデルを設定(全員共通)
 	static void SetStageModel(int modelId);
+
+	// ステージの壁と床になるフレームの番号を設定(Stage::Initで渡す)
+	static void SetStageFrames(const std::vector<int>& frames);
+
+	// ステージのフレーム番号とモデルの取得
+	static const std::vector<int>& GetStageFrames(void);
+	static int GetStageModel(void);
+
+	// 閉じている扉のフレーム番号を設定(DoorManagerが毎フレーム渡す)
+	static void SetDoorFrames(const std::vector<int>& frames);
 
 	// 更新(壁の押し戻し→重力→地面)。移動を済ませてから呼ぶ
 	void Update(VECTOR& pos, float deltaTime);
@@ -86,6 +100,12 @@ public:
 		const BodyCollision& other,
 		const VECTOR& otherPos) const;
 
+	// 指定のフレームと当たっているか(扉を閉めるときに挟まないか調べる)
+	bool IsHitFrame(const VECTOR& pos, int frameIndex) const;
+
+	// 四方を壁や閉じた扉に囲まれているか(ロッカーや個室に隠れているか)
+	bool IsEnclosed(const VECTOR& pos) const;
+
 	// デバッグ用にカプセルを描く
 	void DrawDebug(const VECTOR& pos) const;
 
@@ -96,6 +116,10 @@ private:
 
 	// ステージのモデルのハンドルID(全員で共有)
 	static int stageModelId_;
+
+	// 壁として扱うフレーム(ステージは常に、扉は閉じているときだけ)
+	static std::vector<int> stageFrames_;
+	static std::vector<int> closedDoorFrames_;
 
 	// 体の形
 	PARAM param_;
@@ -120,6 +144,9 @@ private:
 
 	// 壁との衝突(カプセル)
 	void CollisionWall(VECTOR& pos);
+
+	// 1つのフレームに対する壁との衝突
+	void CollisionWallFrame(VECTOR& pos, int frameIndex);
 
 	// 重力で落ちる
 	void ApplyGravity(VECTOR& pos, float deltaTime);

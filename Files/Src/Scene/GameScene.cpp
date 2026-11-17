@@ -9,7 +9,7 @@
 #include "../Manager/ParamManager.h"
 #include "../Object/Collision/BodyCollision.h"
 #include "../Object/Grid.h"
-#include "../Object/Stage.h"
+#include "../Object/Stage/Stage.h"
 #include "../Object/Player.h"
 #include "GameScene.h"
 

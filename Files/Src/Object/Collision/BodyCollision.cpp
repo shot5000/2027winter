@@ -6,6 +6,10 @@
 // ステージのモデルは全員で共有
 int BodyCollision::stageModelId_ = BodyCollision::NO_MODEL;
 
+// 壁として扱うフレーム(ステージは常に、扉は閉じているときだけ)
+std::vector<int> BodyCollision::stageFrames_;
+std::vector<int> BodyCollision::closedDoorFrames_;
+
 BodyCollision::BodyCollision(void)
 {
 	param_ = { 0.0f, AsoUtility::VECTOR_ZERO, AsoUtility::VECTOR_ZERO, 0.0f };
@@ -30,6 +34,81 @@ void BodyCollision::Init(const PARAM& param)
 void BodyCollision::SetStageModel(int modelId)
 {
 	stageModelId_ = modelId;
+}
+
+void BodyCollision::SetStageFrames(const std::vector<int>& frames)
+{
+	stageFrames_ = frames;
+}
+
+const std::vector<int>& BodyCollision::GetStageFrames(void)
+{
+	return stageFrames_;
+}
+
+int BodyCollision::GetStageModel(void)
+{
+	return stageModelId_;
+}
+
+void BodyCollision::SetDoorFrames(const std::vector<int>& frames)
+{
+	closedDoorFrames_ = frames;
+}
+
+bool BodyCollision::IsHitFrame(const VECTOR& pos, int frameIndex) const
+{
+	if (stageModelId_ == NO_MODEL)
+	{
+		return false;
+	}
+
+	MV1_COLL_RESULT_POLY_DIM hits_ = MV1CollCheck_Capsule(
+		stageModelId_, frameIndex,
+		GetCapsuleTop(pos), GetCapsuleDown(pos), param_.radius_
+	);
+	bool isHit_ = hits_.HitNum > 0;
+	MV1CollResultPolyDimTerminate(hits_);
+	return isHit_;
+}
+
+bool BodyCollision::IsEnclosed(const VECTOR& pos) const
+{
+	if (stageModelId_ == NO_MODEL)
+	{
+		return false;
+	}
+
+	// カプセルの真ん中から、水平の四方向へ線を引く
+	VECTOR center_ = VScale(VAdd(GetCapsuleTop(pos), GetCapsuleDown(pos)), 0.5f);
+	const VECTOR DIRS[] = {
+		VGet(1.0f, 0.0f, 0.0f), VGet(-1.0f, 0.0f, 0.0f),
+		VGet(0.0f, 0.0f, 1.0f), VGet(0.0f, 0.0f, -1.0f)
+	};
+
+	// 壁になるフレーム(ステージと閉じた扉)をまとめる
+	std::vector<int> frames_ = stageFrames_;
+	frames_.insert(frames_.end(), closedDoorFrames_.begin(), closedDoorFrames_.end());
+
+	// 全部の方向が何かにぶつかれば、囲まれている
+	for (const VECTOR& dir_ : DIRS)
+	{
+		VECTOR end_ = VAdd(center_, VScale(dir_, ENCLOSED_RAY_LEN));
+		bool isHit_ = false;
+		for (int frame_ : frames_)
+		{
+			if (MV1CollCheck_Line(stageModelId_, frame_, center_, end_).HitFlag == 1)
+			{
+				isHit_ = true;
+				break;
+			}
+		}
+		if (!isHit_)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void BodyCollision::Update(VECTOR& pos, float deltaTime)
@@ -139,9 +218,22 @@ void BodyCollision::CollisionWall(VECTOR& pos)
 		return;
 	}
 
+	// ステージの壁と、閉じている扉から押し戻す
+	for (int frame_ : stageFrames_)
+	{
+		CollisionWallFrame(pos, frame_);
+	}
+	for (int frame_ : closedDoorFrames_)
+	{
+		CollisionWallFrame(pos, frame_);
+	}
+}
+
+void BodyCollision::CollisionWallFrame(VECTOR& pos, int frameIndex)
+{
 	// カプセルと当たっている面を全部取る
 	MV1_COLL_RESULT_POLY_DIM hits_ = MV1CollCheck_Capsule(
-		stageModelId_, ALL_FRAME,
+		stageModelId_, frameIndex,
 		GetCapsuleTop(pos), GetCapsuleDown(pos), param_.radius_
 	);
 
@@ -253,24 +345,25 @@ void BodyCollision::CollisionGround(VECTOR& pos)
 	VECTOR end_ = pos;
 	end_.y += param_.footY_ - GROUND_MARGIN;
 
-	MV1_COLL_RESULT_POLY_DIM hits_ = MV1CollCheck_LineDim(
-		stageModelId_, ALL_FRAME, start_, end_
-	);
-
-	// 当たった中で、一番高い位置を地面とする
+	// 当たった中で、一番高い位置を地面とする(地面はステージだけ)
 	bool isHit_ = false;
 	float groundY_ = 0.0f;
-	for (int i_ = 0; i_ < hits_.HitNum; i_++)
+	for (int frame_ : stageFrames_)
 	{
-		float hitY_ = hits_.Dim[i_].HitPosition.y;
-		if (!isHit_ || hitY_ > groundY_)
+		MV1_COLL_RESULT_POLY_DIM hits_ = MV1CollCheck_LineDim(
+			stageModelId_, frame_, start_, end_
+		);
+		for (int i_ = 0; i_ < hits_.HitNum; i_++)
 		{
-			groundY_ = hitY_;
-			isHit_ = true;
+			float hitY_ = hits_.Dim[i_].HitPosition.y;
+			if (!isHit_ || hitY_ > groundY_)
+			{
+				groundY_ = hitY_;
+				isHit_ = true;
+			}
 		}
+		MV1CollResultPolyDimTerminate(hits_);
 	}
-
-	MV1CollResultPolyDimTerminate(hits_);
 
 	if (!isHit_)
 	{

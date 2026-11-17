@@ -1,6 +1,6 @@
 #include "Stage.h"
-#include "../Application.h"
-#include "../Manager/ResourceManager.h"
+#include "../../Application.h"
+#include "../../Manager/ResourceManager.h"
 
 Stage::Stage(void)
 {
@@ -29,9 +29,22 @@ void Stage::Init(void)
 			GetColorF(MATERIAL_AMBIENT, MATERIAL_AMBIENT, MATERIAL_AMBIENT, MATERIAL_ALPHA));
 	}
 
-	// 当たり判定用の情報を作る
-	MV1SetupCollInfo(modelId_, BodyCollision::ALL_FRAME,
-		COLL_DIV_X, COLL_DIV_Y, COLL_DIV_Z);
+	// 壁と床になるフレームだけ、当たり判定用の情報を作る
+	// (扉はDoorManagerが別に用意する)
+	std::vector<int> stageFrames_;
+	int frameNum_ = MV1GetFrameNum(modelId_);
+	for (int i_ = 0; i_ < frameNum_; i_++)
+	{
+		std::string name_ = MV1GetFrameName(modelId_, i_);
+		if (name_.rfind(STAGE_FRAME_PREFIX, 0) != 0)
+		{
+			continue;
+		}
+
+		MV1SetupCollInfo(modelId_, i_, COLL_DIV_X, COLL_DIV_Y, COLL_DIV_Z);
+		stageFrames_.push_back(i_);
+	}
+	BodyCollision::SetStageFrames(stageFrames_);
 }
 
 void Stage::Update(void)
@@ -46,8 +59,9 @@ void Stage::Draw(void)
 
 void Stage::Release(void)
 {
-	// 当たり判定用の情報を破棄
+	// 当たり判定用の情報を破棄(全フレーム分)
 	MV1TerminateCollInfo(modelId_, BodyCollision::ALL_FRAME);
+	BodyCollision::SetStageFrames({});
 
 	// ゲームのたびに読み込み直すため、モデルを解放する
 	ResourceManager::GetInstance().Unload(ResourceManager::SRC::STAGE);

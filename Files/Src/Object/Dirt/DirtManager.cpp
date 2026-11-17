@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <fstream>
+#include <numeric>
+#include <random>
+#include "../../External/json/json.hpp"
 #include "../../Manager/InputManager.h"
 #include "DirtManager.h"
 
@@ -11,11 +16,14 @@ DirtManager::~DirtManager(void)
 
 void DirtManager::Init(void)
 {
-	// 座標のリストの数だけ汚れを作る
+	// JSONの候補から、汚れの数だけランダムに位置を選んで汚れを作る
 	dirts_.clear();
-	for (int i_ = 0; i_ < DIRT_COUNT; i_++)
+	if (LoadSpawnPositions())
 	{
-		dirts_.emplace_back(DIRT_POS_LIST[i_]);
+		for (const VECTOR& pos_ : PickSpawnPositions(DIRT_COUNT))
+		{
+			dirts_.emplace_back(pos_);
+		}
 	}
 
 	// 掃除した数を0に戻す
@@ -86,6 +94,67 @@ bool DirtManager::IsAiming(float cleanReach) const
 int DirtManager::GetCleanCount(void) const
 {
 	return cleanCount_;
+}
+
+bool DirtManager::LoadSpawnPositions(void)
+{
+	spawnPositions_.clear();
+
+	std::ifstream file_(SPAWN_JSON_PATH);
+	if (!file_.is_open())
+	{
+		return false;
+	}
+
+	// 書き方が間違っていても止まらないよう、例外なしで読む
+	nlohmann::json json_ = nlohmann::json::parse(file_, nullptr, false);
+	if (json_.is_discarded() || !json_.contains("spawnPositions"))
+	{
+		return false;
+	}
+
+	for (const auto& data_ : json_["spawnPositions"])
+	{
+		// 数字が3つ並んでいないものは飛ばす
+		if (!data_.is_array() || data_.size() != POS_ELEMENT_NUM)
+		{
+			continue;
+		}
+
+		VECTOR pos_ = VGet(
+			data_[0].get<float>(),
+			data_[1].get<float>(),
+			data_[2].get<float>());
+		spawnPositions_.push_back(pos_);
+	}
+
+	return !spawnPositions_.empty();
+}
+
+std::vector<VECTOR> DirtManager::PickSpawnPositions(int num_) const
+{
+	// 候補の番号を並べてシャッフルし、先頭から使う(同じ場所が重ならない)
+	int candidateNum_ = static_cast<int>(spawnPositions_.size());
+	std::vector<int> indexes_(candidateNum_);
+	std::iota(indexes_.begin(), indexes_.end(), 0);
+
+	std::random_device seed_;
+	std::mt19937 engine_(seed_());
+	std::shuffle(indexes_.begin(), indexes_.end(), engine_);
+
+	// 候補より多くは選べない
+	int pickNum_ = num_;
+	if (pickNum_ > candidateNum_)
+	{
+		pickNum_ = candidateNum_;
+	}
+
+	std::vector<VECTOR> positions_;
+	for (int i_ = 0; i_ < pickNum_; i_++)
+	{
+		positions_.push_back(spawnPositions_[indexes_[i_]]);
+	}
+	return positions_;
 }
 
 int DirtManager::GetAimedIndex(float cleanReach) const

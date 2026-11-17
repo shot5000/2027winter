@@ -11,14 +11,11 @@ public:
 	// 配置する汚れの数
 	static constexpr int DIRT_COUNT = 5;
 
-	// 汚れを置く座標(増やすときは DIRT_COUNT も変える)
-	static constexpr VECTOR DIRT_POS_LIST[DIRT_COUNT] = {
-		{ 0.0f, 0.0f, -350.0f },
-		{ 300.0f, 0.0f, -100.0f },
-		{ -300.0f, 0.0f, 0.0f },
-		{ 500.0f, 0.0f, -400.0f },
-		{ -500.0f, 0.0f, -200.0f },
-	};
+	// 汚れの発生位置を書いたJSONのパス
+	static constexpr const char* SPAWN_JSON_PATH = "Data/Json/DirtData.json";
+
+	// JSONの1つの位置は [X, Y, Z] の3つの数字
+	static constexpr size_t POS_ELEMENT_NUM = 3;
 
 	// 狙っている汚れがないときの番号
 	static constexpr int NO_INDEX = -1;
@@ -65,13 +62,13 @@ public:
 	// 掃除した数の取得
 	int GetCleanCount(void) const;
 
-	// 全部掃除したか
-	bool IsAllCleaned(void) const;
-
 private:
 
 	// 汚れの配列
 	std::vector<Dirt> dirts_;
+
+	// 汚れの発生位置の候補(JSONから読み込む)
+	std::vector<VECTOR> spawnPositions_;
 
 	// 長押ししている汚れの番号
 	int holdIndex_;
@@ -87,6 +84,12 @@ private:
 
 	// 掃除した数
 	int cleanCount_;
+
+	// JSONから発生位置の候補を読み込む(読み込めたらtrue)
+	bool LoadSpawnPositions(void);
+
+	// 候補の中からランダムに num_ 個の位置を選ぶ
+	std::vector<VECTOR> PickSpawnPositions(int num_) const;
 
 	// 狙っている汚れの番号を返す(なければ NO_INDEX)
 	int GetAimedIndex(float cleanReach) const;
