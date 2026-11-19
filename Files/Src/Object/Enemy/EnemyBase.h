@@ -74,6 +74,12 @@ public:
 	// 攻撃力(プレイヤーに与えるダメージ。プレイヤーに体力ができたら使う)
 	int GetAttackPower(void) const;
 
+	// 追う相手が隠れているかを、索敵に伝える
+	void SetTargetHidden(bool isHidden);
+
+	// 隠れた相手を追って、扉を開けに行く状態か(検知中で、隠れ範囲の中にいる)
+	bool CanOpenHideDoor(const VECTOR& targetPos) const;
+
 protected:
 
 	// 座標(足元)

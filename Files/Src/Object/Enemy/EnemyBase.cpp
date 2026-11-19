@@ -106,6 +106,16 @@ int EnemyBase::GetAttackPower(void) const
 	return attackPower_;
 }
 
+void EnemyBase::SetTargetHidden(bool isHidden)
+{
+	sensor_.SetTargetHidden(isHidden);
+}
+
+bool EnemyBase::CanOpenHideDoor(const VECTOR& targetPos) const
+{
+	return sensor_.IsChasing() && sensor_.IsInHideRange(pos_, targetPos);
+}
+
 void EnemyBase::ApplyParam(const EnemyParam& param)
 {
 	hp_ = param.hp_;

@@ -4,6 +4,7 @@
 #include <DxLib.h>
 #include "EnemyBase.h"
 class ItemManager;
+class DoorManager;
 
 class EnemyManager
 {
@@ -52,6 +53,12 @@ public:
 
 	// 攻撃に当たった敵に、ダメージを与える(体力が0になった敵は倒れる)
 	void DamageHitEnemies(const ItemManager& itemManager);
+
+	// 追う相手(プレイヤー)が隠れているかを、全員に伝える
+	void SetTargetHidden(bool isHidden);
+
+	// 敵が扉を開ける(近くの扉を、ルールに合えば開く)
+	void OpenDoors(DoorManager& doorMng, const VECTOR& playerPos);
 
 private:
 

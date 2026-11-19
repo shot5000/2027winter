@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <DxLib.h>
-
 class BodyCollision;
 
 // 扉(教室の引き戸・個室とロッカーの開き戸)をまとめて扱う
@@ -17,19 +16,15 @@ public:
 		HIDE,	// トイレ個室・ロッカーの開き戸
 	};
 
-	// 扉の近くにいる人(プレイヤーや敵)。閉めるときに挟まないか調べる
-	struct OCCUPANT
-	{
-		const BodyCollision* body_;
-		VECTOR pos_;
-	};
+	// 敵やプレイヤーとの距離を測るとき、同じ階とみなす高さの差
+	static constexpr float OPEN_HEIGHT_RANGE = 200.0f;
 
 	DoorManager(void);
 	~DoorManager(void);
 
 	// stageModelId : 扉のフレームが入っているステージのモデル
 	void Init(int stageModelId);
-	void Update(float deltaTime, const std::vector<OCCUPANT>& occupants);
+	void Update(float deltaTime);
 	void Release(void);
 
 	// 視線の先にある扉の番号(なければ -1)
@@ -40,9 +35,13 @@ public:
 
 	// 敵が扉を開ける(条件を満たす扉だけ開く)
 	void EnemyOpen(
-		const VECTOR& enemyPos, bool isChasing, const VECTOR& playerPos);
+		const VECTOR& enemyPos, bool canOpenHide, const VECTOR& playerPos);
 
+	// 閉じているか(開きかけでも閉じているとみなす)
 	bool IsClosed(int index) const;
+
+	// 閉じた個室・ロッカーの扉の中に隠れているか
+	bool IsHidden(const BodyCollision& body, const VECTOR& pos) const;
 
 private:
 
@@ -56,7 +55,7 @@ private:
 	static constexpr float HINGE_OPEN_DEG = 90.0f;
 
 	// 開く向きが逆なら -1.0f にする(Blender→DxLibで反転しているとき用)
-	static constexpr float HINGE_SIGN = 1.0f;
+	static constexpr float HINGE_SIGN = -1.0f;
 	static constexpr float SLIDE_SIGN = 1.0f;
 
 	// 視線の届く距離
@@ -68,7 +67,6 @@ private:
 	// 個室・ロッカーの扉を開ける条件
 	static constexpr float HIDE_PLAYER_DIST = 200.0f;	// 扉とプレイヤーの距離
 	static constexpr float HIDE_VERY_CLOSE = 250.0f;	// 敵とプレイヤーが「とても近い」距離
-	static constexpr float HIDE_CHASE_RANGE = 1500.0f;	// 発見状態のときの範囲
 
 	// 当たり判定のきめ細かさ(扉は小さいので小さめ)
 	static constexpr int COLL_DIV = 4;
@@ -97,7 +95,10 @@ private:
 
 	void LoadFrames(void);
 	void ApplyPose(const DOOR& door);
-	bool IsBlocked(const DOOR& door, const std::vector<OCCUPANT>& occupants) const;
+	bool IsMoving(const DOOR& door) const;
 	void UpdateClosedFrames(void);
 	static float HorizontalDist(const VECTOR& a, const VECTOR& b);
+
+	// 同じ階で、水平の距離が近いか
+	static bool IsNear(const VECTOR& a, const VECTOR& b, float dist);
 };

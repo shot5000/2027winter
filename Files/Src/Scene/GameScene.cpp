@@ -154,16 +154,24 @@ void GameScene::Update(void)
 
 	// 敵の更新(プレイヤーの位置を渡す)
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
-	enemyManager_->Update(camera_->GetPos());
+
+	// 閉じたロッカーや個室の中なら、敵は新しく見つけず、遠い敵は追跡が切れる
+	const VECTOR& playerPos_ = camera_->GetPos();
+	bool isHidden_ = doorMng_.IsHidden(camera_->GetBody(), playerPos_);
+	enemyManager_->SetTargetHidden(isHidden_);
+	enemyManager_->Update(playerPos_);
 
 	// 扉の更新
 	UpdateDoor();
+
+	// 敵が扉を開ける
+	enemyManager_->OpenDoors(doorMng_, playerPos_);
 
 	// 攻撃に当たった敵に、ダメージを与える
 	enemyManager_->DamageHitEnemies(itemManager_);
 
 	// 敵に触れたら、ゲームオーバーへ
-	if (enemyManager_->IsHitPlayer(camera_->GetBody(), camera_->GetPos()))
+	if (enemyManager_->IsHitPlayer(camera_->GetBody(), playerPos_))
 	{
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_OVER);
 		return;
@@ -343,10 +351,7 @@ void GameScene::UpdateDoor(void)
 
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
 
-	// 扉の近くにいる人(閉めるときに挟まないように)
-	std::vector<DoorManager::OCCUPANT> occupants_;
-	occupants_.push_back({ &camera_->GetBody(), camera_->GetPos() });
-	doorMng_.Update(deltaTime_, occupants_);
+	doorMng_.Update(deltaTime_);
 
 	// 視線の向き(カメラの角度から作る)
 	const VECTOR& angles_ = camera_->GetAngles();

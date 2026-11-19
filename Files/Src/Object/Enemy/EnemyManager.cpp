@@ -2,6 +2,7 @@
 #include "../Item/ItemManager.h"
 #include "EnemyGhost.h"
 #include "EnemyManager.h"
+#include "../Stage/DoorManager.h"
 
 EnemyManager::EnemyManager(void)
 {
@@ -89,6 +90,23 @@ void EnemyManager::DamageHitEnemies(const ItemManager& itemManager)
 
 	// “|‚ê‚½“G‚ð•Ð•t‚¯‚é
 	RemoveDefeated();
+}
+
+void EnemyManager::SetTargetHidden(bool isHidden)
+{
+	for (auto& enemy_ : enemies_)
+	{
+		enemy_->SetTargetHidden(isHidden);
+	}
+}
+
+void EnemyManager::OpenDoors(DoorManager& doorMng, const VECTOR& playerPos)
+{
+	for (auto& enemy_ : enemies_)
+	{
+		doorMng.EnemyOpen(
+			enemy_->GetPos(), enemy_->CanOpenHideDoor(playerPos), playerPos);
+	}
 }
 
 void EnemyManager::RemoveDefeated(void)

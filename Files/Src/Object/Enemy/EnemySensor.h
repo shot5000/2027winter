@@ -41,6 +41,14 @@ public:
 	static constexpr int FAN_DIV_NUM = 24;
 	static constexpr int CIRCLE_DIV_NUM = 48;
 
+	// 隠れた相手を追い続ける範囲(円の半径)。発見中の円とは別
+	// 外で隠れたら索敵に戻り、中で隠れたら扉を開けに来る
+	static constexpr float HIDE_RANGE = 400.0f;
+
+	// 隠れ範囲の円の描画：色、床からの高さ(発見中の円と重ならないように少し上)
+	static constexpr unsigned int COLOR_HIDE = 0x33ff66;
+	static constexpr float HIDE_DRAW_OFFSET_Y = 5.0f;
+
 	// コンストラクタ
 	EnemySensor(void);
 
@@ -59,6 +67,12 @@ public:
 	// 検知中か
 	bool IsChasing(void) const;
 
+	// 追う相手が隠れているか(隠れている間は、新しく検知しない)
+	void SetTargetHidden(bool isHidden);
+
+	// 相手が、隠れた相手を追い続ける範囲の中にいるか
+	bool IsInHideRange(const VECTOR& pos, const VECTOR& targetPos) const;
+
 private:
 
 	// 大きさ
@@ -69,6 +83,9 @@ private:
 
 	// 使うか(Initを呼んだときだけ使う)
 	bool isEnabled_;
+
+	// 追う相手が隠れているか
+	bool isTargetHidden_;
 
 	// 扇の要の位置(頭の先)
 	VECTOR GetOrigin(const VECTOR& pos, const VECTOR& frontDir) const;
@@ -87,5 +104,8 @@ private:
 
 	// 角度から、水平方向の向きのベクトルを求める
 	static VECTOR GetDirXZ(float angleY);
+
+	// 隠れ範囲の円(線)を描く
+	void DrawHideRange(const VECTOR& pos) const;
 
 };

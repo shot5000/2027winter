@@ -17,6 +17,7 @@ void EnemySensor::Init(const PARAM& param)
 	param_ = param;
 	state_ = STATE::SEARCH;
 	isEnabled_ = true;
+	isTargetHidden_ = false;
 }
 
 void EnemySensor::Update(
@@ -30,8 +31,8 @@ void EnemySensor::Update(
 	switch (state_)
 	{
 	case STATE::SEARCH:
-		// 扇の中にプレイヤーが入ったら、検知する
-		if (IsInFan(pos, frontDir, targetPos))
+		// 扇の中にプレイヤーが入ったら、検知する(隠れている間は見つけない)
+		if (!isTargetHidden_ && IsInFan(pos, frontDir, targetPos))
 		{
 			state_ = STATE::CHASE;
 		}
@@ -39,6 +40,11 @@ void EnemySensor::Update(
 	case STATE::CHASE:
 		// 円の外に出たら、索敵に戻す(向きは関係なく、円の中にいる間は検知したまま)
 		if (!IsInCircle(pos, targetPos))
+		{
+			state_ = STATE::SEARCH;
+		}
+		// 隠れたときに、隠れ範囲の外にいたら、見失って索敵に戻す
+		else if (isTargetHidden_ && !IsInHideRange(pos, targetPos))
 		{
 			state_ = STATE::SEARCH;
 		}
@@ -52,6 +58,9 @@ void EnemySensor::Draw(const VECTOR& pos, const VECTOR& frontDir) const
 	{
 		return;
 	}
+
+	// 隠れ範囲は、状態に関係なく、いつも描く
+	DrawHideRange(pos);
 
 	if (state_ == STATE::CHASE)
 	{
@@ -77,6 +86,19 @@ void EnemySensor::Draw(const VECTOR& pos, const VECTOR& frontDir) const
 bool EnemySensor::IsChasing(void) const
 {
 	return isEnabled_ && state_ == STATE::CHASE;
+}
+
+void EnemySensor::SetTargetHidden(bool isHidden)
+{
+	isTargetHidden_ = isHidden;
+}
+
+bool EnemySensor::IsInHideRange(const VECTOR& pos, const VECTOR& targetPos) const
+{
+	// 敵の位置から相手への水平方向の距離(高さの違いは無視する)
+	VECTOR diff_ = VSub(targetPos, pos);
+	diff_.y = 0.0f;
+	return VSize(diff_) <= HIDE_RANGE;
 }
 
 VECTOR EnemySensor::GetOrigin(const VECTOR& pos, const VECTOR& frontDir) const
@@ -151,4 +173,26 @@ VECTOR EnemySensor::GetDirXZ(float angleY)
 {
 	// Y軸の回転(カメラと同じ向き)。角度0で+Z、増えると+X側へ回る
 	return VGet(sinf(angleY), 0.0f, cosf(angleY));
+}
+
+void EnemySensor::DrawHideRange(const VECTOR& pos) const
+{
+	// ライトを切って、円周を細かい線に分けて描く
+	SetUseLighting(FALSE);
+
+	VECTOR center_ = pos;
+	center_.y += DRAW_OFFSET_Y + HIDE_DRAW_OFFSET_Y;
+
+	float stepAngle_ = CIRCLE_ANGLE / static_cast<float>(CIRCLE_DIV_NUM);
+	for (int i_ = 0; i_ < CIRCLE_DIV_NUM; i_++)
+	{
+		float angle1_ = stepAngle_ * static_cast<float>(i_);
+		float angle2_ = angle1_ + stepAngle_;
+		VECTOR p1_ = VAdd(center_, VScale(GetDirXZ(angle1_), HIDE_RANGE));
+		VECTOR p2_ = VAdd(center_, VScale(GetDirXZ(angle2_), HIDE_RANGE));
+		DrawLine3D(p1_, p2_, COLOR_HIDE);
+	}
+
+	// 設定を元に戻す
+	SetUseLighting(TRUE);
 }
