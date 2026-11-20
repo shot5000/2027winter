@@ -1,19 +1,19 @@
 #include "../../Manager/ParamManager.h"
 #include "../../Utility/AsoUtility.h"
-#include "ItemMop.h"
+#include "ItemStick.h"
 
-ItemMop::ItemMop(void)
-	: ItemBase(ITEM_PARAM, ParamManager::GetInstance().GetItem(PARAM_ID))
+ItemStick::ItemStick(const ItemBase::PARAM& param, const char* paramId)
+	: ItemBase(param, ParamManager::GetInstance().GetItem(paramId))
 {
 	startPos_ = AsoUtility::VECTOR_ZERO;
 	endPos_ = AsoUtility::VECTOR_ZERO;
 }
 
-ItemMop::~ItemMop(void)
+ItemStick::~ItemStick(void)
 {
 }
 
-void ItemMop::Draw(void) const
+void ItemStick::Draw(void) const
 {
 	if (!IsActive())
 	{
@@ -36,7 +36,7 @@ void ItemMop::Draw(void) const
 	SetUseLighting(TRUE);
 }
 
-bool ItemMop::IsHitBody(
+bool ItemStick::IsHitBody(
 	const BodyCollision& body, const VECTOR& bodyPos) const
 {
 	// 攻撃が出ていないときは、当たらない
@@ -51,7 +51,7 @@ bool ItemMop::IsHitBody(
 		body.GetRadius()) == TRUE;
 }
 
-void ItemMop::UpdateActive(float rate)
+void ItemStick::UpdateActive(float rate)
 {
 	// 持ち手の位置(目の少し前、少し下)
 	VECTOR eye_ = GetCameraPosition();

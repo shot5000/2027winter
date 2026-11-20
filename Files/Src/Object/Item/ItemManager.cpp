@@ -1,7 +1,6 @@
 #include <cstring>
 #include <DxLib.h>
 #include "../../Manager/InputManager.h"
-#include "ItemMop.h"
 #include "ItemManager.h"
 
 ItemManager::ItemManager(void)
@@ -18,7 +17,9 @@ void ItemManager::Init(void)
 {
 	// いったん全部のスロットを空にして、最初のスロットにモップを入れる
 	Release();
-	SetItem(FIRST_SLOT, Create(ITEM_ID::MOP));
+	SetItem(0, Create(ITEM_ID::SPONGE));
+	SetItem(1, Create(ITEM_ID::VACUUM));
+	SetItem(2, Create(ITEM_ID::SPEAR));
 	selectedIndex_ = FIRST_SLOT;
 
 	// ゲームを始めたときに押していたクリックで、攻撃が出ないようにする
@@ -51,6 +52,15 @@ void ItemManager::Update(void)
 		if (item_ != nullptr)
 		{
 			item_->Update();
+		}
+	}
+
+	// 壊れたアイテムは、攻撃が終わったらスロットから消す
+	for (auto& item_ : items_)
+	{
+		if (item_ != nullptr && item_->IsBroken() && !item_->IsActive())
+		{
+			item_.reset();
 		}
 	}
 }
@@ -103,12 +113,22 @@ void ItemManager::DrawSlot(void) const
 		DrawFormatString(
 			x_ + NUMBER_OFFSET, posY_ + NUMBER_OFFSET, TEXT_COLOR, "%d", i_ + 1);
 
-		// アイテムの名前(持っているときだけ)
+		// アイテムの名前と、耐久力(持っているときだけ)
 		if (items_[i_] != nullptr)
 		{
 			DrawCenterString(
 				x_ + SLOT_SIZE / CENTER_DIV, posY_ + NAME_OFFSET_Y,
 				items_[i_]->GetName(), TEXT_COLOR);
+
+			if (items_[i_]->IsBreakable())
+			{
+				char text_[TEXT_BUF_SIZE];
+				snprintf(text_, sizeof(text_), DURABILITY_TEXT,
+					items_[i_]->GetDurabilityLeft());
+				DrawCenterString(
+					x_ + SLOT_SIZE / CENTER_DIV, posY_ + DURABILITY_OFFSET_Y,
+					text_, TEXT_COLOR);
+			}
 		}
 	}
 }
@@ -123,14 +143,15 @@ void ItemManager::Release(void)
 
 std::unique_ptr<ItemBase> ItemManager::Create(ITEM_ID id)
 {
-	// アイテムを足したら、ここにも足す
-	switch (id)
+	// 表から、アイテムの定義を引く
+	int index_ = static_cast<int>(id);
+	if (index_ < 0 || index_ >= static_cast<int>(ITEM_ID::MAX))
 	{
-	case ITEM_ID::MOP:
-		return std::make_unique<ItemMop>();
-	default:
 		return nullptr;
 	}
+
+	const ITEM_DEF& def_ = ITEM_TABLE[index_];
+	return std::make_unique<ItemStick>(def_.param_, def_.paramId_);
 }
 
 void ItemManager::SetItem(int slotIndex, std::unique_ptr<ItemBase> item)
@@ -201,6 +222,15 @@ float ItemManager::GetMoveSpeedRate(void) const
 		return NO_ITEM_MOVE_RATE;
 	}
 	return selected_->GetMoveSpeedRate();
+}
+
+void ItemManager::ConsumeCleanDurability(void)
+{
+	ItemBase* selected_ = GetSelectedItem();
+	if (selected_ != nullptr)
+	{
+		selected_->ConsumeDurability();
+	}
 }
 
 ItemBase* ItemManager::GetSelectedItem(void) const

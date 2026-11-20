@@ -1,8 +1,12 @@
 #pragma once
+#include <string>
 
 // アイテムの性能(JSONで決める値)
 struct ItemParam
 {
+	// 説明文(ショップに表示する)
+	std::string description_;
+
 	// 読み込めなかったとき、JSONに書かれていないときの初期値
 	static constexpr int DEFAULT_ATTACK_POWER = 1;
 	static constexpr float DEFAULT_COOLDOWN_TIME = 0.5f;

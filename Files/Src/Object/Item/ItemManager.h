@@ -2,17 +2,48 @@
 #include <memory>
 #include <DxLib.h>
 #include "ItemBase.h"
+#include "ItemStick.h"
 
 class ItemManager
 {
 
 public:
 
-	// アイテムの番号(増やすときは、ここと Create に足す)
+	// アイテムの番号(増やすときは、ここと ITEM_TABLE に足す)
 	enum class ITEM_ID
 	{
 		MOP,
+		BROOM,
+		VACUUM,
+		SPRAY,
+		TALISMAN,
+		PURIFY_WAND,
+		BAT,
+		SPEAR,
+		SPONGE,
+		ROLLER,
 		MAX,
+	};
+
+	// アイテムの定義(JSONの名前と、コードで決める値)
+	struct ITEM_DEF
+	{
+		const char* paramId_;
+		ItemBase::PARAM param_;
+	};
+
+	// アイテムの表(ITEM_IDと同じ順番で並べる)
+	static constexpr ITEM_DEF ITEM_TABLE[static_cast<int>(ITEM_ID::MAX)] = {
+		{ "mop", { "モップ", ItemBase::KIND::BOTH, ItemStick::ACTIVE_TIME } },
+		{ "broom", { "ほうき", ItemBase::KIND::BOTH, ItemStick::ACTIVE_TIME } },
+		{ "vacuum", { "ハンディ掃除機", ItemBase::KIND::BOTH, ItemStick::ACTIVE_TIME } },
+		{ "spray", { "消毒スプレー", ItemBase::KIND::BOTH, ItemStick::ACTIVE_TIME } },
+		{ "talisman", { "お札", ItemBase::KIND::ATTACK, ItemStick::ACTIVE_TIME } },
+		{ "purifyWand", { "お祓い棒", ItemBase::KIND::ATTACK, ItemStick::ACTIVE_TIME } },
+		{ "bat", { "バット", ItemBase::KIND::ATTACK, ItemStick::ACTIVE_TIME } },
+		{ "spear", { "槍", ItemBase::KIND::ATTACK, ItemStick::ACTIVE_TIME } },
+		{ "sponge", { "スポンジ", ItemBase::KIND::CLEAN, ItemStick::ACTIVE_TIME } },
+		{ "roller", { "粘着ローラー", ItemBase::KIND::CLEAN, ItemStick::ACTIVE_TIME } },
 	};
 
 	// スロットの数と、最初のスロットの番号
@@ -49,6 +80,11 @@ public:
 
 	// アイテムを持っていないときの、歩く速さにかける割合
 	static constexpr float NO_ITEM_MOVE_RATE = 1.0f;
+
+	// 耐久力の残りの表示
+	static constexpr const char* DURABILITY_TEXT = "残り%d";
+	static constexpr int DURABILITY_OFFSET_Y = 56;
+	static constexpr int TEXT_BUF_SIZE = 16;
 
 	// コンストラクタ
 	ItemManager(void);
@@ -91,6 +127,9 @@ public:
 
 	// 選んでいるアイテムの、歩く速さにかける割合
 	float GetMoveSpeedRate(void) const;
+
+	// 掃除したときに、選んでいるアイテムの耐久力を減らす
+	void ConsumeCleanDurability(void);
 
 private:
 

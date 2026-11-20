@@ -2,26 +2,14 @@
 #include <DxLib.h>
 #include "ItemBase.h"
 
-class ItemMop : public ItemBase
+// まっすぐ伸びる攻撃をするアイテム(モップ、ほうき、バットなど)。違いは表とJSONで決める
+class ItemStick : public ItemBase
 {
 
 public:
 
-	// 性能(JSON)の名前
-	static constexpr const char* PARAM_ID = "mop";
-
-	// 名前
-	static constexpr const char* NAME = "モップ";
-
 	// 攻撃が出ている時間(秒)
 	static constexpr float ACTIVE_TIME = 0.25f;
-
-	// アイテムごとに、コードで決める値(攻撃も掃除もできる)
-	static constexpr ItemBase::PARAM ITEM_PARAM = {
-		NAME,
-		ItemBase::KIND::BOTH,
-		ACTIVE_TIME
-	};
 
 	// 持ち手の位置：目の位置から、正面へ離す距離と、下へ下げる高さ
 	static constexpr float HAND_FRONT_DIST = 30.0f;
@@ -32,11 +20,11 @@ public:
 	static constexpr unsigned int DRAW_COLOR = 0xff8800;
 	static constexpr int DRAW_ALPHA = 120;
 
-	// コンストラクタ
-	ItemMop(void);
+	// コンストラクタ(コードで決める値と、JSONの名前を受け取る)
+	ItemStick(const ItemBase::PARAM& param, const char* paramId);
 
 	// デストラクタ
-	~ItemMop(void) override;
+	~ItemStick(void) override;
 
 	// 攻撃の描画
 	void Draw(void) const override;

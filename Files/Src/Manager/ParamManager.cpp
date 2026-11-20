@@ -1,4 +1,6 @@
 #include <fstream>
+#include <string>
+#include <vector>
 #include <DxLib.h>
 #include "../External/json/json.hpp"
 #include "ParamManager.h"
@@ -7,6 +9,10 @@ ParamManager* ParamManager::instance_ = nullptr;
 
 namespace
 {
+	// 文字コードを変換するかと、変換用の領域の倍率
+	constexpr bool IS_CONVERT_TO_SJIS = true;
+	constexpr size_t CONVERT_BUF_RATE = 2;
+
 	// JSONファイルを読む(読めなかったら false。理由は Log.txt に残す)
 	bool ReadJson(const char* path, nlohmann::json& json)
 	{
@@ -32,6 +38,21 @@ namespace
 		}
 
 		return true;
+	}
+
+	// JSONの文字(UTF-8)を、画面に出せる文字コードに変える
+	std::string ToLocalText(const std::string& text)
+	{
+		if (!IS_CONVERT_TO_SJIS)
+		{
+			return text;
+		}
+
+		std::vector<char> buf_(text.size() * CONVERT_BUF_RATE + 1, 0);
+		ConvertStringCharCodeFormat(
+			DX_CHARCODEFORMAT_UTF8, text.c_str(),
+			DX_CHARCODEFORMAT_SHIFTJIS, buf_.data());
+		return std::string(buf_.data());
 	}
 }
 
@@ -146,6 +167,8 @@ void ParamManager::LoadItem(void)
 
 			// 書かれていない項目は、初期値のままにする
 			ItemParam param_;
+			param_.description_ = ToLocalText(
+				data_.value("description", param_.description_));
 			param_.attackPower_ = data_.value("attackPower", param_.attackPower_);
 			param_.cooldownTime_ = data_.value("cooldownTime", param_.cooldownTime_);
 			param_.attackReach_ = data_.value("attackReach", param_.attackReach_);

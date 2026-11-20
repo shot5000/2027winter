@@ -145,6 +145,12 @@ void GameScene::Update(void)
 		itemManager_.GetCleanReach());
 	GameResult::AddMoney(reward_);
 
+	// 汚れを消したら、使ったアイテムの耐久力を減らす
+	if (reward_ > 0)
+	{
+		itemManager_.ConsumeCleanDurability();
+	}
+
 	// ドアをEの長押しで開けたら、クリアへ
 	if (goal_.Update())
 	{

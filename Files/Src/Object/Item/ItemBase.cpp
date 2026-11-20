@@ -20,6 +20,7 @@ void ItemBase::Init(void)
 	isActive_ = false;
 	activeTimer_ = 0.0f;
 	cooldownTimer_ = 0.0f;
+	durabilityLeft_ = itemParam_.durability_;
 }
 
 bool ItemBase::Attack(void)
@@ -34,6 +35,7 @@ bool ItemBase::Attack(void)
 	activeTimer_ = param_.activeTime_;
 	cooldownTimer_ = itemParam_.cooldownTime_;
 	OnStart();
+	ConsumeDurability();
 
 	return true;
 }
@@ -157,6 +159,34 @@ float ItemBase::GetCleanTime(void) const
 		speed_ = MIN_CLEAN_SPEED;
 	}
 	return BASE_CLEAN_TIME / speed_;
+}
+
+void ItemBase::ConsumeDurability(void)
+{
+	if (IsBreakable() && durabilityLeft_ > 0)
+	{
+		durabilityLeft_--;
+	}
+}
+
+bool ItemBase::IsBreakable(void) const
+{
+	return itemParam_.durability_ > 0;
+}
+
+bool ItemBase::IsBroken(void) const
+{
+	return IsBreakable() && durabilityLeft_ <= 0;
+}
+
+int ItemBase::GetDurabilityLeft(void) const
+{
+	return durabilityLeft_;
+}
+
+const char* ItemBase::GetDescription(void) const
+{
+	return itemParam_.description_.c_str();
 }
 
 void ItemBase::OnStart(void)

@@ -16,7 +16,6 @@ public:
 		BOTH,   // 攻撃も掃除もできる
 	};
 
-	// アイテムごとに、コードで決める値
 	struct PARAM
 	{
 		const char* name_;		// 名前(スロットに表示する)
@@ -81,6 +80,21 @@ public:
 	// 汚れ1つを消すのにかかる時間(秒。掃除速度から求める)
 	float GetCleanTime(void) const;
 
+	// 耐久力を1つ減らす(壊れないアイテムは何もしない)
+	void ConsumeDurability(void);
+
+	// 耐久力があるアイテムか(JSONの耐久力が0なら、壊れない)
+	bool IsBreakable(void) const;
+
+	// 壊れたか
+	bool IsBroken(void) const;
+
+	// 耐久力の残り
+	int GetDurabilityLeft(void) const;
+
+	// 説明文(JSONで決めた値)
+	const char* GetDescription(void) const;
+
 protected:
 
 	// 攻撃を出した瞬間の処理(初期では何もしない)
@@ -106,5 +120,8 @@ private:
 
 	// 次に攻撃できるまでの残り時間(秒)
 	float cooldownTimer_;
+
+	// 耐久力の残り
+	int durabilityLeft_;
 
 };
