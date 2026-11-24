@@ -28,6 +28,7 @@ public:
 	{
 		NONE,
 		TITLE,
+		SHOP,
 		GAME,
 		GAME_CLEAR,
 		GAME_OVER,

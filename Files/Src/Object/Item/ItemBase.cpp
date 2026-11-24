@@ -9,6 +9,7 @@ ItemBase::ItemBase(const PARAM& param, const ItemParam& itemParam)
 	isActive_ = false;
 	activeTimer_ = 0.0f;
 	cooldownTimer_ = 0.0f;
+	durabilityLeft_ = itemParam_.durability_;
 }
 
 ItemBase::~ItemBase(void)
@@ -20,7 +21,6 @@ void ItemBase::Init(void)
 	isActive_ = false;
 	activeTimer_ = 0.0f;
 	cooldownTimer_ = 0.0f;
-	durabilityLeft_ = itemParam_.durability_;
 }
 
 bool ItemBase::Attack(void)

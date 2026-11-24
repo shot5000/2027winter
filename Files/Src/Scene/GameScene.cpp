@@ -24,6 +24,7 @@ GameScene::GameScene(void) : SceneBase(), backMenu_(BACK_TEXT)
 	timeLeft_ = TIME_LIMIT;
 	aimedDoor_ = -1;
 	preTime_ = 0;
+	aimedFloorItem_ = FloorItemManager::NO_ITEM;
 }
 
 GameScene::~GameScene(void)
@@ -35,8 +36,8 @@ void GameScene::Init(void)
 	// 敵とアイテムの性能(JSON)を、最新の内容に読み直す(ゲームを始めるたびに)
 	ParamManager::GetInstance().Load();
 
-	// 前のゲームのお金を消して、制限時間を最初に戻す
-	GameResult::Reset();
+	// 稼いだ額を0に戻して、制限時間を最初に戻す(所持金は持ち越す)
+	GameResult::ResetEarned();
 	timeLeft_ = TIME_LIMIT;
 
 	// カメラを操作できるモードにして、最初の位置に戻す
@@ -66,6 +67,22 @@ void GameScene::Init(void)
 
 	// アイテムの初期化
 	itemManager_.Init();
+
+	// 購入したアイテムを、購入順にスロットへ入れる。入りきらない分は、昇降口の床に置く
+	floorItems_.Init();
+	aimedFloorItem_ = FloorItemManager::NO_ITEM;
+	int dropCount_ = 0;
+	for (int id_ : GameResult::GetPurchased())
+	{
+		auto item_ = ItemManager::Create(static_cast<ItemManager::ITEM_ID>(id_));
+		if (item_ == nullptr || itemManager_.AddItem(item_))
+		{
+			continue;
+		}
+
+		floorItems_.Add(std::move(item_), FloorItemManager::GetStartPos(dropCount_));
+		dropCount_++;
+	}
 
 	// ドアの初期化
 	goal_.Init();
@@ -167,6 +184,9 @@ void GameScene::Update(void)
 	enemyManager_->SetTargetHidden(isHidden_);
 	enemyManager_->Update(playerPos_);
 
+	// 床のアイテムを拾う、捨てる
+	UpdateFloorItem();
+
 	// 扉の更新
 	UpdateDoor();
 
@@ -198,6 +218,9 @@ void GameScene::Draw(void)
 
 	// 汚れの描画
 	dirtManager_->Draw();
+
+	// 床のアイテムの描画
+	floorItems_.Draw();
 
 	// ドアの描画
 	goal_.Draw();
@@ -258,6 +281,12 @@ void GameScene::Release(void)
 	// アイテム解放
 	itemManager_.Release();
 
+	// 床のアイテム解放
+	floorItems_.Release();
+
+	// 購入したアイテムは、持ち越せない
+	GameResult::ClearPurchased();
+
 	// ステージを消した後に、当たり判定から外す
 	BodyCollision::SetStageModel(BodyCollision::NO_MODEL);
 
@@ -285,6 +314,22 @@ void GameScene::DrawPrompt(void)
 	{
 		DrawPromptText(GOAL_PROMPT_TEXT);
 		DrawGoalGauge();
+		return;
+	}
+
+	// 床のアイテムを狙っているときは、拾う案内(スロットがいっぱいなら、その案内)
+	if (aimedFloorItem_ != FloorItemManager::NO_ITEM)
+	{
+		if (!itemManager_.HasEmptySlot())
+		{
+			DrawPromptText(FULL_PROMPT_TEXT);
+			return;
+		}
+
+		char text_[TEXT_BUF_SIZE];
+		snprintf(text_, sizeof(text_), FLOOR_PROMPT_TEXT,
+			floorItems_.GetName(aimedFloorItem_));
+		DrawPromptText(text_);
 		return;
 	}
 
@@ -368,7 +413,7 @@ void GameScene::UpdateDoor(void)
 	aimedDoor_ = -1;
 	bool isAimDirt_ = itemManager_.CanClean()
 		&& dirtManager_->IsAiming(itemManager_.GetCleanReach());
-	if (isAimDirt_ || goal_.IsAiming())
+	if (isAimDirt_ || goal_.IsAiming() || aimedFloorItem_ != FloorItemManager::NO_ITEM)
 	{
 		return;
 	}
@@ -399,6 +444,31 @@ void GameScene::DrawDoorPrompt(void)
 		DOOR_PROMPT_TEXT, static_cast<int>(strlen(DOOR_PROMPT_TEXT)));
 	DrawString(centerX_ - textW_ / CENTER_DIV, centerY_ + PROMPT_OFFSET_Y,
 		DOOR_PROMPT_TEXT, PROMPT_COLOR);
+}
+
+void GameScene::UpdateFloorItem(void)
+{
+	Camera* camera_ = SceneManager::GetInstance().GetCamera();
+	InputManager& input_ = InputManager::GetInstance();
+
+	// 視線の向き(カメラの角度から作る)
+	const VECTOR& angles_ = camera_->GetAngles();
+	MATRIX mat_ = MMult(MGetRotX(angles_.x), MGetRotY(angles_.y));
+	VECTOR dir_ = VTransform(VGet(0.0f, 0.0f, 1.0f), mat_);
+
+	// 狙っているアイテムを、Eで拾う
+	aimedFloorItem_ = floorItems_.FindAimed(camera_->GetPos(), dir_);
+	if (aimedFloorItem_ != FloorItemManager::NO_ITEM
+		&& input_.IsTrgDown(FloorItemManager::PICK_KEY))
+	{
+		floorItems_.PickUp(aimedFloorItem_, itemManager_);
+	}
+
+	// 持っているアイテムを、Gで床に置く
+	if (input_.IsTrgDown(FloorItemManager::DROP_KEY))
+	{
+		floorItems_.DropSelected(itemManager_, camera_->GetPos(), dir_);
+	}
 }
 
 void GameScene::UpdateBackMenu(void)

@@ -17,9 +17,7 @@ void ItemManager::Init(void)
 {
 	// いったん全部のスロットを空にして、最初のスロットにモップを入れる
 	Release();
-	SetItem(0, Create(ITEM_ID::SPONGE));
-	SetItem(1, Create(ITEM_ID::VACUUM));
-	SetItem(2, Create(ITEM_ID::SPEAR));
+	SetItem(FIRST_SLOT, Create(ITEM_ID::MOP));
 	selectedIndex_ = FIRST_SLOT;
 
 	// ゲームを始めたときに押していたクリックで、攻撃が出ないようにする
@@ -231,6 +229,36 @@ void ItemManager::ConsumeCleanDurability(void)
 	{
 		selected_->ConsumeDurability();
 	}
+}
+
+bool ItemManager::HasEmptySlot(void) const
+{
+	for (const auto& item_ : items_)
+	{
+		if (item_ == nullptr)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool ItemManager::AddItem(std::unique_ptr<ItemBase>& item)
+{
+	for (int i_ = 0; i_ < SLOT_COUNT; i_++)
+	{
+		if (items_[i_] == nullptr)
+		{
+			SetItem(i_, std::move(item));
+			return true;
+		}
+	}
+	return false;
+}
+
+std::unique_ptr<ItemBase> ItemManager::TakeSelectedItem(void)
+{
+	return std::move(items_[selectedIndex_]);
 }
 
 ItemBase* ItemManager::GetSelectedItem(void) const

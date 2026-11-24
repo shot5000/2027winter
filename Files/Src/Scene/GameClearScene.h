@@ -6,11 +6,13 @@ class GameClearScene : public SceneBase
 
 public:
 
-	// 獲得したお金の表示
+	// お金の表示
 	static constexpr const char* MONEY_TEXT = "獲得金額 %d円";
+	static constexpr const char* TOTAL_TEXT = "所持金 %d円";
 	static constexpr unsigned int MONEY_COLOR = 0xffff00;
 	static constexpr int MONEY_POS_X = 400;
 	static constexpr int MONEY_POS_Y = 300;
+	static constexpr int TOTAL_POS_Y = 330;
 
 	// コンストラクタ
 	GameClearScene(void);

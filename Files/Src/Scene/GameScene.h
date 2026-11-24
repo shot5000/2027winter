@@ -5,6 +5,7 @@
 #include "../Object/Dirt/DirtManager.h"
 #include "../Object/Goal/Goal.h"
 #include "../Object/Item/ItemManager.h"
+#include "../Object/Item/FloorItemManager.h"
 #include "../Object/Stage/DoorManager.h"
 class Grid;
 class Stage;
@@ -80,6 +81,10 @@ public:
 	// 扉の表示の文字
 	static constexpr const char* DOOR_PROMPT_TEXT = "Eで開閉";
 
+	// 床のアイテムの操作表示
+	static constexpr const char* FLOOR_PROMPT_TEXT = "%s  Eで拾う";
+	static constexpr const char* FULL_PROMPT_TEXT = "スロットがいっぱいです";
+
 	// コンストラクタ
 	GameScene(void);
 
@@ -111,6 +116,9 @@ public:
 
 	// 扉の表示の描画
 	void DrawDoorPrompt(void);
+
+	// 床のアイテムの更新(拾う、捨てる)
+	void UpdateFloorItem(void);
 
 private:
 
@@ -149,6 +157,12 @@ private:
 
 	// 前のフレームの時刻
 	LONGLONG preTime_;
+
+	// 床に置かれたアイテム
+	FloorItemManager floorItems_;
+
+	// 視線の先の、床のアイテムの番号(なければ-1)
+	int aimedFloorItem_;
 
 	// 確認の選択肢の更新
 	void UpdateBackMenu(void);

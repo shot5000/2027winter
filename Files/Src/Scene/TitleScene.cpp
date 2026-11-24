@@ -3,6 +3,7 @@
 #include "../Application.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
+#include "../Common/GameResult.h"
 #include "TitleScene.h"
 
 TitleScene::TitleScene(void) : SceneBase()
@@ -57,10 +58,11 @@ void TitleScene::UpdateTitle(void)
 {
 	InputManager& input_ = InputManager::GetInstance();
 
-	// スペースキーでゲームへ
+	// スペースキーでショップへ(新しく遊び始めるので、所持金などを最初に戻す)
 	if (input_.IsTrgDown(KEY_INPUT_SPACE))
 	{
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
+		GameResult::Reset();
+		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::SHOP);
 		return;
 	}
 

@@ -131,6 +131,15 @@ public:
 	// 掃除したときに、選んでいるアイテムの耐久力を減らす
 	void ConsumeCleanDurability(void);
 
+	// 空いているスロットがあるか
+	bool HasEmptySlot(void) const;
+
+	// 空いている最初のスロットに入れる(入れられたら true。入れたときだけ、渡したアイテムは空になる)
+	bool AddItem(std::unique_ptr<ItemBase>& item);
+
+	// 選んでいるスロットのアイテムを取り出す(空なら nullptr)
+	std::unique_ptr<ItemBase> TakeSelectedItem(void);
+
 private:
 
 	// 各スロットのアイテム(空のスロットは nullptr)
