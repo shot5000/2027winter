@@ -3,6 +3,7 @@
 #include "EnemyGhost.h"
 #include "EnemyManager.h"
 #include "../Stage/DoorManager.h"
+#include "EnemyRoute.h"
 
 EnemyManager::EnemyManager(void)
 {
@@ -14,12 +15,17 @@ EnemyManager::~EnemyManager(void)
 
 void EnemyManager::Init(void)
 {
+	// 全員共通の、巡回する道を読む
+	std::vector<VECTOR> route_ = EnemyRoute::Load();
+
 	// 座標のリストの数だけ、EnemyGhostを作る
 	enemies_.clear();
 	for (int i_ = 0; i_ < GHOST_COUNT; i_++)
 	{
-		enemies_.push_back(std::make_unique<EnemyGhost>(
-			GHOST_POS_LIST[i_], GHOST_ANGLE_LIST[i_]));
+		auto ghost_ = std::make_unique<EnemyGhost>(
+			GHOST_POS_LIST[i_], GHOST_ANGLE_LIST[i_]);
+		ghost_->SetRoute(route_);
+		enemies_.push_back(std::move(ghost_));
 	}
 
 	// それぞれの初期化

@@ -1,7 +1,7 @@
 {
   "ghost": {
     "hp": 10,
-    "searchSpeed": 0.0,
+    "searchSpeed": 100.0,
     "chaseSpeed": 200.0,
     "fanRange": 600.0,
     "fanAngleDeg": 150.0,

@@ -6,6 +6,7 @@ EnemyGhost::EnemyGhost(const VECTOR& pos, float angleY)
 	: EnemyBase(pos, BODY_PARAM, angleY)
 {
 	modelId_ = Resource::INVALID_HANDLE;
+	isChased_ = false;
 
 	// JSONで決めた、体力・速さ・攻撃力を反映する
 	const EnemyParam& param_ = ParamManager::GetInstance().GetEnemy(PARAM_ID);
@@ -62,4 +63,42 @@ void EnemyGhost::Release(void)
 	ResourceManager::GetInstance().DeleteModelDuplicate(
 		ResourceManager::SRC::ENEMY_GHOST, modelId_);
 	modelId_ = Resource::INVALID_HANDLE;
+}
+
+void EnemyGhost::DrawDebug(void) const
+{
+	EnemyBase::DrawDebug();
+	route_.DrawDebug();
+}
+
+void EnemyGhost::SetRoute(const std::vector<VECTOR>& points)
+{
+	route_.Init(points, pos_);
+}
+
+void EnemyGhost::UpdateSearch(const VECTOR& targetPos)
+{
+	// 道が決まっていなければ、今まで通り
+	if (route_.IsEmpty())
+	{
+		EnemyBase::UpdateSearch(targetPos);
+		return;
+	}
+
+	// 追跡のあとは、いちばん近い地点から巡回に戻る
+	if (isChased_)
+	{
+		route_.SelectNearest(pos_);
+		isChased_ = false;
+	}
+
+	// 地点に着いたら次へ。向かう地点のほうを向いて、索敵時の速さで進む
+	route_.Update(pos_);
+	ChaseStraight(route_.GetTarget(), searchSpeed_);
+}
+
+void EnemyGhost::UpdateChase(const VECTOR& targetPos)
+{
+	isChased_ = true;
+	EnemyBase::UpdateChase(targetPos);
 }

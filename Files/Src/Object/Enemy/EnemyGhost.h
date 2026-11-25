@@ -1,5 +1,7 @@
 #pragma once
+#include <vector>
 #include "EnemyBase.h"
+#include "EnemyRoute.h"
 
 class EnemyGhost : public EnemyBase
 {
@@ -62,9 +64,29 @@ public:
 	// 解放
 	void Release(void) override;
 
+	// 当たり判定と、巡回の道の表示(確認用)
+	void DrawDebug(void) const override;
+
+	// 巡回する道を決める(今の位置にいちばん近い地点から始める)
+	void SetRoute(const std::vector<VECTOR>& points);
+
+protected:
+
+	// 索敵中の動き(道があれば巡回する)
+	void UpdateSearch(const VECTOR& targetPos) override;
+
+	// 検知中の動き(追跡したことを覚えておく)
+	void UpdateChase(const VECTOR& targetPos) override;
+
 private:
 
 	// モデルのハンドルID
 	int modelId_;
+
+	// 巡回する道
+	EnemyRoute route_;
+
+	// 直前まで追跡していたか(追跡のあとは、近い地点から巡回に戻る)
+	bool isChased_;
 
 };

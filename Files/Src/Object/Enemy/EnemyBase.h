@@ -47,7 +47,7 @@ public:
 	virtual void Draw(void) = 0;
 
 	// 当たり判定の表示(確認用)
-	void DrawDebug(void) const;
+	virtual void DrawDebug(void) const;
 
 	// 解放
 	virtual void Release(void);
