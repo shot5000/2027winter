@@ -112,6 +112,9 @@ public:
 	// 体の向きを設定(Y軸の角度。カプセルの両端のずれを、この角度で回す)
 	void SetAngleY(float angleY);
 
+	// 2点の間が、壁や閉じた扉で遮られているか
+	static bool IsBlocked(const VECTOR& from, const VECTOR& to);
+
 private:
 
 	// ステージのモデルのハンドルID(全員で共有)

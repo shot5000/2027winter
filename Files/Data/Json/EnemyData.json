@@ -7,5 +7,14 @@
     "fanAngleDeg": 150.0,
     "chaseRange": 800.0,
     "attackPower": 1
+  },
+    "statue": {
+    "hp": 3,
+    "searchSpeed": 0.0,
+    "chaseSpeed": 500.0,
+    "fanRange": 0.0,
+    "fanAngleDeg": 90.0,
+    "chaseRange": 1500.0,
+    "attackPower": 1
   }
 }

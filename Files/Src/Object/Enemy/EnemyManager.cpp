@@ -4,6 +4,7 @@
 #include "EnemyManager.h"
 #include "../Stage/DoorManager.h"
 #include "EnemyRoute.h"
+#include "EnemyStatue.h"
 
 EnemyManager::EnemyManager(void)
 {
@@ -26,6 +27,13 @@ void EnemyManager::Init(void)
 			GHOST_POS_LIST[i_], GHOST_ANGLE_LIST[i_]);
 		ghost_->SetRoute(route_);
 		enemies_.push_back(std::move(ghost_));
+	}
+
+	// EnemyStatue‚ğì‚é
+	for (int i_ = 0; i_ < STATUE_COUNT; i_++)
+	{
+		enemies_.push_back(std::make_unique<EnemyStatue>(
+			STATUE_POS_LIST[i_], STATUE_ANGLE_LIST[i_]));
 	}
 
 	// ‚»‚ê‚¼‚ê‚Ì‰Šú‰»

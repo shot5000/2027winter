@@ -14,6 +14,17 @@ public:
 	// 配置するEnemyGhostの数
 	static constexpr int GHOST_COUNT = 2;
 
+	// 配置するEnemyStatueの数
+	static constexpr int STATUE_COUNT = 1;
+
+	// EnemyStatueを置く座標と、最初の向き
+	static constexpr VECTOR STATUE_POS_LIST[STATUE_COUNT] = {
+		{ 600.0f, 0.0f, 0.0f },
+	};
+	static constexpr float STATUE_ANGLE_LIST[STATUE_COUNT] = {
+		0.0f,
+	};
+
 	// EnemyGhostを置く座標(増やすときは GHOST_COUNT も変える)
 	static constexpr VECTOR GHOST_POS_LIST[GHOST_COUNT] = {
 		{ -600.0f, 0.0f, 0.0f },

@@ -196,6 +196,31 @@ void BodyCollision::SetAngleY(float angleY)
 	angleY_ = angleY;
 }
 
+bool BodyCollision::IsBlocked(const VECTOR& from, const VECTOR& to)
+{
+	if (stageModelId_ == NO_MODEL)
+	{
+		return false;
+	}
+
+	// ステージと、閉じた扉のどれかに、線がぶつかれば遮られている
+	for (int frame_ : stageFrames_)
+	{
+		if (MV1CollCheck_Line(stageModelId_, frame_, from, to).HitFlag == 1)
+		{
+			return true;
+		}
+	}
+	for (int frame_ : closedDoorFrames_)
+	{
+		if (MV1CollCheck_Line(stageModelId_, frame_, from, to).HitFlag == 1)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 float BodyCollision::GetLowestOffsetY(void) const
 {
 	if (param_.topOffset_.y < param_.downOffset_.y)
