@@ -1,12 +1,13 @@
 #include <cmath>
 #include "../../Manager/ParamManager.h"
 #include "../../Manager/ResourceManager.h"
-#include "EnemyStatue.h"
+#include "EnemyAnatomy.h"
 
-EnemyStatue::EnemyStatue(const VECTOR& pos, float angleY)
+EnemyAnatomy::EnemyAnatomy(const VECTOR& pos, float angleY)
 	: EnemyBase(pos, EnemyGhost::BODY_PARAM, angleY)
 {
 	modelId_ = Resource::INVALID_HANDLE;
+	isSeen_ = false;
 
 	// JSONで決めた、体力・速さ・攻撃力を反映する
 	const EnemyParam& param_ = ParamManager::GetInstance().GetEnemy(PARAM_ID);
@@ -21,11 +22,11 @@ EnemyStatue::EnemyStatue(const VECTOR& pos, float angleY)
 		param_.fanAngleDeg_ * EnemyParam::DEG_TO_RAD / EnemySensor::HALF_DIV;
 }
 
-EnemyStatue::~EnemyStatue(void)
+EnemyAnatomy::~EnemyAnatomy(void)
 {
 }
 
-void EnemyStatue::Init(void)
+void EnemyAnatomy::Init(void)
 {
 	EnemyBase::Init();
 
@@ -35,7 +36,7 @@ void EnemyStatue::Init(void)
 	MV1SetScale(modelId_, EnemyGhost::MODEL_SCALE);
 }
 
-void EnemyStatue::Draw(void)
+void EnemyAnatomy::Draw(void)
 {
 	VECTOR drawPos_ = pos_;
 	drawPos_.y += EnemyGhost::MODEL_OFFSET_Y;
@@ -52,9 +53,12 @@ void EnemyStatue::Draw(void)
 	};
 	MV1SetDifColorScale(modelId_, color_);
 	MV1DrawModel(modelId_);
+
+	// 動き出す範囲
+	DrawActiveRange();
 }
 
-void EnemyStatue::Release(void)
+void EnemyAnatomy::Release(void)
 {
 	EnemyBase::Release();
 
@@ -64,10 +68,11 @@ void EnemyStatue::Release(void)
 	modelId_ = Resource::INVALID_HANDLE;
 }
 
-void EnemyStatue::UpdateProcess(const VECTOR& targetPos)
+void EnemyAnatomy::UpdateProcess(const VECTOR& targetPos)
 {
 	// 見られている間は、その場で止まる
-	if (IsSeen(targetPos))
+	isSeen_ = IsSeen(targetPos);
+	if (isSeen_)
 	{
 		return;
 	}
@@ -84,7 +89,7 @@ void EnemyStatue::UpdateProcess(const VECTOR& targetPos)
 	ChaseStraight(targetPos, chaseSpeed_);
 }
 
-bool EnemyStatue::IsSeen(const VECTOR& targetPos) const
+bool EnemyAnatomy::IsSeen(const VECTOR& targetPos) const
 {
 	// プレイヤーの目から、敵の体の中心への向き
 	VECTOR center_ = VGet(pos_.x, pos_.y + VIEW_TARGET_Y, pos_.z);
@@ -107,4 +112,32 @@ bool EnemyStatue::IsSeen(const VECTOR& targetPos) const
 
 	// 視野の中でも、壁や閉じた扉の向こうなら、見られていない
 	return !BodyCollision::IsBlocked(targetPos, center_);
+}
+
+void EnemyAnatomy::DrawActiveRange(void) const
+{
+	unsigned int color_ = isSeen_ ? COLOR_SEEN : COLOR_MOVING;
+	VECTOR center_ = VGet(
+		pos_.x, pos_.y + EnemySensor::DRAW_OFFSET_Y, pos_.z);
+	float step_ = EnemySensor::CIRCLE_ANGLE / EnemySensor::CIRCLE_DIV_NUM;
+
+	// 半透明で、ライトを切って、両面を描く設定にする
+	SetUseLighting(FALSE);
+	SetWriteZBuffer3D(FALSE);
+	SetUseBackCulling(DX_CULLING_NONE);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, EnemySensor::DRAW_ALPHA);
+
+	// 円を、細かい三角形に分けて描く
+	for (int i_ = 0; i_ < EnemySensor::CIRCLE_DIV_NUM; i_++)
+	{
+		VECTOR p0_ = VAdd(center_, VScale(GetDirXZ(step_ * i_), activeRange_));
+		VECTOR p1_ = VAdd(center_, VScale(GetDirXZ(step_ * (i_ + 1)), activeRange_));
+		DrawTriangle3D(center_, p0_, p1_, color_, TRUE);
+	}
+
+	// 設定を元に戻す
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	SetUseBackCulling(DX_CULLING_LEFT);
+	SetWriteZBuffer3D(TRUE);
+	SetUseLighting(TRUE);
 }

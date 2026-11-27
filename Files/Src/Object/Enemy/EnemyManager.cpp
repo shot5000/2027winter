@@ -4,7 +4,9 @@
 #include "EnemyManager.h"
 #include "../Stage/DoorManager.h"
 #include "EnemyRoute.h"
-#include "EnemyStatue.h"
+#include "EnemyAnatomy.h"
+#include "EnemyBlind.h"
+#include "../Noise/NoiseManager.h"
 
 EnemyManager::EnemyManager(void)
 {
@@ -29,11 +31,18 @@ void EnemyManager::Init(void)
 		enemies_.push_back(std::move(ghost_));
 	}
 
-	// EnemyStatue‚ğì‚é
-	for (int i_ = 0; i_ < STATUE_COUNT; i_++)
+	// EnemyAnatomy‚ğì‚é
+	for (int i_ = 0; i_ < ANATOMY_COUNT; i_++)
 	{
-		enemies_.push_back(std::make_unique<EnemyStatue>(
-			STATUE_POS_LIST[i_], STATUE_ANGLE_LIST[i_]));
+		enemies_.push_back(std::make_unique<EnemyAnatomy>(
+			ANATOMY_POS_LIST[i_], ANATOMY_ANGLE_LIST[i_]));
+	}
+
+	// EnemyBlind‚ğì‚é
+	for (int i_ = 0; i_ < BLIND_COUNT; i_++)
+	{
+		enemies_.push_back(std::make_unique<EnemyBlind>(
+			BLIND_POS_LIST[i_], BLIND_ANGLE_LIST[i_]));
 	}
 
 	// ‚»‚ê‚¼‚ê‚Ì‰Šú‰»
@@ -66,6 +75,8 @@ void EnemyManager::Draw(void)
 			enemy_->DrawDebug();
 		}
 	}
+
+	NoiseManager::DrawDebug();
 }
 
 void EnemyManager::Release(void)

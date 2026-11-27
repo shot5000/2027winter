@@ -4,6 +4,7 @@
 #include "../../External/json/json.hpp"
 #include "../../Utility/AsoUtility.h"
 #include "../Collision/BodyCollision.h"
+#include "../Noise/NoiseManager.h"
 #include "DoorManager.h"
 
 const char* const DoorManager::SLIDE_PREFIX = "Door_Slide_";
@@ -220,6 +221,9 @@ void DoorManager::Toggle(int index)
 	}
 
 	doors_[index].isOpenTarget_ = !doors_[index].isOpenTarget_;
+
+	// ”à‚Ì‰¹(“G‚ª•·‚«‚Â‚¯‚é)
+	NoiseManager::Emit(doors_[index].pos_, NoiseManager::DOOR_RADIUS);
 }
 
 bool DoorManager::IsClosed(int index) const

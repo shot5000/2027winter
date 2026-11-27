@@ -12,6 +12,7 @@
 #include "../Object/Grid.h"
 #include "../Object/Stage/Stage.h"
 #include "../Object/Player.h"
+#include "../Object/Noise/NoiseManager.h"
 #include "GameScene.h"
 
 GameScene::GameScene(void) : SceneBase(), backMenu_(BACK_TEXT)
@@ -39,6 +40,9 @@ void GameScene::Init(void)
 	// 稼いだ額を0に戻して、制限時間を最初に戻す(所持金は持ち越す)
 	GameResult::ResetEarned();
 	timeLeft_ = TIME_LIMIT;
+
+	// 前のゲームの音を消す
+	NoiseManager::Reset();
 
 	// カメラを操作できるモードにして、最初の位置に戻す
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
@@ -139,6 +143,9 @@ void GameScene::Update(void)
 		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME_CLEAR);
 		return;
 	}
+
+	// 音の更新(古い音を消す。確認の選択肢が出ている間は進まない)
+	NoiseManager::Update(SceneManager::GetInstance().GetDeltaTime());
 
 	// グリッド更新
 	grid_->Update();
@@ -286,6 +293,9 @@ void GameScene::Release(void)
 
 	// 購入したアイテムは、持ち越せない
 	GameResult::ClearPurchased();
+
+	// 音を消す
+	NoiseManager::Reset();
 
 	// ステージを消した後に、当たり判定から外す
 	BodyCollision::SetStageModel(BodyCollision::NO_MODEL);

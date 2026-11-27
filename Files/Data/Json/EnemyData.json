@@ -8,13 +8,22 @@
     "chaseRange": 800.0,
     "attackPower": 1
   },
-    "statue": {
+  "anatomy": {
     "hp": 3,
     "searchSpeed": 0.0,
-    "chaseSpeed": 500.0,
+    "chaseSpeed": 300.0,
     "fanRange": 0.0,
     "fanAngleDeg": 90.0,
     "chaseRange": 1500.0,
+    "attackPower": 1
+  },
+    "blind": {
+    "hp": 3,
+    "searchSpeed": 0.0,
+    "chaseSpeed": 300.0,
+    "fanRange": 1.0,
+    "fanAngleDeg": 0.0,
+    "chaseRange": 0.0,
     "attackPower": 1
   }
 }

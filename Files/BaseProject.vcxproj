@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Object\Enemy\EnemyStatue.cpp" />
+    <ClCompile Include="Src\Object\Enemy\EnemyBlind.cpp" />
+    <ClCompile Include="Src\Object\Noise\NoiseManager.cpp" />
+    <ClCompile Include="Src\Object\Enemy\EnemyAnatomy.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyRoute.cpp" />
     <ClCompile Include="Src\Object\Item\FloorItemManager.cpp" />
     <ClCompile Include="Src\Scene\ShopScene.cpp" />
@@ -62,7 +64,9 @@
     <ClCompile Include="Src\Object\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Object\Enemy\EnemyStatue.h" />
+    <ClInclude Include="Src\Object\Enemy\EnemyBlind.h" />
+    <ClInclude Include="Src\Object\Noise\NoiseManager.h" />
+    <ClInclude Include="Src\Object\Enemy\EnemyAnatomy.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyRoute.h" />
     <ClInclude Include="Src\Object\Item\FloorItemManager.h" />
     <ClInclude Include="Src\Scene\ShopScene.h" />

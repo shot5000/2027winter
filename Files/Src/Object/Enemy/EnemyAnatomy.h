@@ -2,27 +2,31 @@
 #include "EnemyBase.h"
 #include "EnemyGhost.h"
 
-// 見られている間は止まり、見られていないときだけ近づいてくる敵
-class EnemyStatue : public EnemyBase
+// 見られている間は止まり、見られていないときだけ近づいてくる敵(人体模型)
+class EnemyAnatomy : public EnemyBase
 {
 
 public:
 
 	// 性能(JSON)の名前
-	static constexpr const char* PARAM_ID = "statue";
+	static constexpr const char* PARAM_ID = "anatomy";
 
 	// モデルの色にかける割合(Ghostと見分けるため、青っぽくする)
 	static constexpr COLOR_F TINT_COLOR_SCALE = { 0.4f, 0.6f, 1.0f, 1.0f };
+
+	// 動き出す範囲の円の色(止まっているとき、動いているとき)
+	static constexpr unsigned int COLOR_SEEN = 0x33ff66;
+	static constexpr unsigned int COLOR_MOVING = 0xff3333;
 
 	// 見られているかを調べるとき、視線を向ける高さ(足元から。体の中心)
 	// モデルと体の形は Ghost と同じものを使う。専用のモデルにするときは、ここを変える
 	static constexpr float VIEW_TARGET_Y = EnemyGhost::BODY_CENTER_Y;
 
 	// コンストラクタ(置く座標と、最初の向きを受け取る)
-	EnemyStatue(const VECTOR& pos, float angleY);
+	EnemyAnatomy(const VECTOR& pos, float angleY);
 
 	// デストラクタ
-	~EnemyStatue(void) override;
+	~EnemyAnatomy(void) override;
 
 	// 初期化
 	void Init(void) override;
@@ -49,7 +53,13 @@ private:
 	// 見られたとみなす視野の角度(片側。正面からこの角度の中)
 	float viewHalfAngle_;
 
+	// 前回の更新で、プレイヤーに見られていたか(範囲の色を変えるため)
+	bool isSeen_;
+
 	// プレイヤーに見られているか
 	bool IsSeen(const VECTOR& targetPos) const;
+
+	// 動き出す範囲を、床に円で描く
+	void DrawActiveRange(void) const;
 
 };

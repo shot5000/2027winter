@@ -13,27 +13,36 @@ public:
 
 	// 配置するEnemyGhostの数
 	static constexpr int GHOST_COUNT = 2;
-
-	// 配置するEnemyStatueの数
-	static constexpr int STATUE_COUNT = 1;
-
-	// EnemyStatueを置く座標と、最初の向き
-	static constexpr VECTOR STATUE_POS_LIST[STATUE_COUNT] = {
-		{ 600.0f, 0.0f, 0.0f },
-	};
-	static constexpr float STATUE_ANGLE_LIST[STATUE_COUNT] = {
-		0.0f,
-	};
-
 	// EnemyGhostを置く座標(増やすときは GHOST_COUNT も変える)
 	static constexpr VECTOR GHOST_POS_LIST[GHOST_COUNT] = {
 		{ -600.0f, 0.0f, 0.0f },
 		{ 300.0f, 0.0f, 200.0f },
 	};
-
 	// EnemyGhostの最初の向き(Y軸の角度。0のとき、頭は-Z側を向く)
 	static constexpr float GHOST_ANGLE_LIST[GHOST_COUNT] = {
 		0.0f,
+		0.0f,
+	};
+
+	// 配置するEnemyAnatomyの数
+	static constexpr int ANATOMY_COUNT = 1;
+	// EnemyAnatomyを置く座標
+	static constexpr VECTOR ANATOMY_POS_LIST[ANATOMY_COUNT] = {
+		{ 600.0f, 0.0f, 0.0f },
+	};
+	// EnemyAnatomyの最初の向き
+	static constexpr float ANATOMY_ANGLE_LIST[ANATOMY_COUNT] = {
+	0.0f,
+	};
+
+	// 配置するEnemyBlindの数
+	static constexpr int BLIND_COUNT = 1;
+	// EnemyBlindを置く座標
+	static constexpr VECTOR BLIND_POS_LIST[BLIND_COUNT] = {
+		{ -600.0f, 0.0f, 600.0f },
+	};
+	// EnemyBlindの最初の向き
+	static constexpr float BLIND_ANGLE_LIST[BLIND_COUNT] = {
 		0.0f,
 	};
 
