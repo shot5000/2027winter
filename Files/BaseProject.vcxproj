@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Enemy\EnemySpawn.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyBlind.cpp" />
     <ClCompile Include="Src\Object\Noise\NoiseManager.cpp" />
     <ClCompile Include="Src\Object\Enemy\EnemyAnatomy.cpp" />
@@ -64,6 +65,7 @@
     <ClCompile Include="Src\Object\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Enemy\EnemySpawn.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyBlind.h" />
     <ClInclude Include="Src\Object\Noise\NoiseManager.h" />
     <ClInclude Include="Src\Object\Enemy\EnemyAnatomy.h" />

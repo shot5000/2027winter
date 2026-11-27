@@ -7,6 +7,12 @@ int NoiseManager::nextId_ = NoiseManager::NO_ID + 1;
 
 void NoiseManager::Emit(const VECTOR& pos, float radius)
 {
+	// ‰¹—Ê‚ª0‚Ì‚à‚Ì‚ÍA‰¹‚ğo‚³‚È‚¢
+	if (radius <= 0.0f)
+	{
+		return;
+	}
+
 	NOISE noise_ = { pos, radius, nextId_, 0.0f };
 	nextId_++;
 	noises_.push_back(noise_);

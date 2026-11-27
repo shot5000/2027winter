@@ -7,6 +7,7 @@
 #include "EnemyAnatomy.h"
 #include "EnemyBlind.h"
 #include "../Noise/NoiseManager.h"
+#include "EnemySpawn.h"
 
 EnemyManager::EnemyManager(void)
 {
@@ -21,28 +22,32 @@ void EnemyManager::Init(void)
 	// 全員共通の、巡回する道を読む
 	std::vector<VECTOR> route_ = EnemyRoute::Load();
 
-	// 座標のリストの数だけ、EnemyGhostを作る
+	// 出現位置の候補を読む(種類ごとに、重ならないように取り出す)
+	EnemySpawn spawn_;
+	spawn_.Load();
+
 	enemies_.clear();
-	for (int i_ = 0; i_ < GHOST_COUNT; i_++)
+
+	// EnemyGhost
+	for (const VECTOR& pos_ : spawn_.Take(EnemyGhost::PARAM_ID))
 	{
-		auto ghost_ = std::make_unique<EnemyGhost>(
-			GHOST_POS_LIST[i_], GHOST_ANGLE_LIST[i_]);
+		auto ghost_ = std::make_unique<EnemyGhost>(pos_, spawn_.GetRandomAngle());
 		ghost_->SetRoute(route_);
 		enemies_.push_back(std::move(ghost_));
 	}
 
-	// EnemyAnatomyを作る
-	for (int i_ = 0; i_ < ANATOMY_COUNT; i_++)
+	// EnemyAnatomy
+	for (const VECTOR& pos_ : spawn_.Take(EnemyAnatomy::PARAM_ID))
 	{
 		enemies_.push_back(std::make_unique<EnemyAnatomy>(
-			ANATOMY_POS_LIST[i_], ANATOMY_ANGLE_LIST[i_]));
+			pos_, spawn_.GetRandomAngle()));
 	}
 
-	// EnemyBlindを作る
-	for (int i_ = 0; i_ < BLIND_COUNT; i_++)
+	// EnemyBlind
+	for (const VECTOR& pos_ : spawn_.Take(EnemyBlind::PARAM_ID))
 	{
 		enemies_.push_back(std::make_unique<EnemyBlind>(
-			BLIND_POS_LIST[i_], BLIND_ANGLE_LIST[i_]));
+			pos_, spawn_.GetRandomAngle()));
 	}
 
 	// それぞれの初期化

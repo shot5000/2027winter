@@ -122,6 +122,9 @@ public:
 	// 選んでいるアイテムで、掃除できる距離(アイテムを持っていなければ0)
 	float GetCleanReach(void) const;
 
+	// 選んでいるアイテムの、掃除の音量(アイテムを持っていなければ0)
+	float GetCleanVolume(void) const;
+
 	// 攻撃が相手の体(カプセル)に当たっていたら、そのダメージを返す(複数なら一番大きい値。当たっていなければ NO_DAMAGE)
 	int GetHitDamage(const BodyCollision& body, const VECTOR& bodyPos) const;
 

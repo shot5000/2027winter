@@ -26,6 +26,14 @@ public:
 	// 音の大きさ(聞こえる範囲)
 	static constexpr float DOOR_RADIUS = 800.0f;
 
+	// 走る音の大きさと、出す間隔(秒)
+	static constexpr float RUN_RADIUS = 1000.0f;
+	static constexpr float RUN_INTERVAL = 0.5f;
+
+	// 攻撃と掃除の音の基準の大きさ(アイテムの音量をかけて使う)
+	static constexpr float ATTACK_BASE_RADIUS = 1000.0f;
+	static constexpr float CLEAN_BASE_RADIUS = 600.0f;
+
 	// 範囲の描画：床からの高さ、色、輪の分割数
 	static constexpr float DRAW_OFFSET_Y = 30.0f;
 	static constexpr unsigned int DRAW_COLOR = 0xffdd33;

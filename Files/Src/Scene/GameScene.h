@@ -85,6 +85,13 @@ public:
 	static constexpr const char* FLOOR_PROMPT_TEXT = "%s  Eで拾う";
 	static constexpr const char* FULL_PROMPT_TEXT = "スロットがいっぱいです";
 
+	// 走っていると判定するキー(左Shift + 移動キーのどれか)
+	static constexpr int RUN_KEY = KEY_INPUT_LSHIFT;
+	static constexpr int MOVE_KEY_COUNT = 4;
+	static constexpr int MOVE_KEYS[MOVE_KEY_COUNT] = {
+		KEY_INPUT_W, KEY_INPUT_A, KEY_INPUT_S, KEY_INPUT_D
+	};
+
 	// コンストラクタ
 	GameScene(void);
 
@@ -164,6 +171,9 @@ private:
 	// 視線の先の、床のアイテムの番号(なければ-1)
 	int aimedFloorItem_;
 
+	// 次に走る音を出すまでの時間(秒)
+	float runNoiseTimer_;
+
 	// 確認の選択肢の更新
 	void UpdateBackMenu(void);
 
@@ -172,5 +182,8 @@ private:
 
 	// ゴールを開ける長押しのゲージの描画
 	void DrawGoalGauge(void);
+
+	// 走っている間、一定の間隔で音を出す
+	void UpdateRunNoise(void);
 
 };

@@ -1,6 +1,7 @@
 #include <cstring>
 #include <DxLib.h>
 #include "../../Manager/InputManager.h"
+#include "../Noise/NoiseManager.h"
 #include "ItemManager.h"
 
 ItemManager::ItemManager(void)
@@ -42,6 +43,11 @@ void ItemManager::Update(void)
 	if (isTrg_ && selected_ != nullptr && selected_->CanAttack())
 	{
 		selected_->Attack();
+
+		// 攻撃の音(目の位置から出る。音量はアイテムのJSONで決める)
+		NoiseManager::Emit(
+			GetCameraPosition(),
+			NoiseManager::ATTACK_BASE_RADIUS * selected_->GetAttackVolume());
 	}
 
 	// 持っているアイテム全部を更新する(切り替えたあとも、出ている攻撃は最後まで続く)
@@ -190,6 +196,16 @@ float ItemManager::GetCleanReach(void) const
 		return 0.0f;
 	}
 	return selected_->GetCleanReach();
+}
+
+float ItemManager::GetCleanVolume(void) const
+{
+	ItemBase* selected_ = GetSelectedItem();
+	if (selected_ == nullptr)
+	{
+		return 0.0f;
+	}
+	return selected_->GetCleanVolume();
 }
 
 int ItemManager::GetHitDamage(

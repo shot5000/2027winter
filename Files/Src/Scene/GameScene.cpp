@@ -26,6 +26,7 @@ GameScene::GameScene(void) : SceneBase(), backMenu_(BACK_TEXT)
 	aimedDoor_ = -1;
 	preTime_ = 0;
 	aimedFloorItem_ = FloorItemManager::NO_ITEM;
+	runNoiseTimer_ = 0.0f;
 }
 
 GameScene::~GameScene(void)
@@ -43,6 +44,8 @@ void GameScene::Init(void)
 
 	// 前のゲームの音を消す
 	NoiseManager::Reset();
+
+	runNoiseTimer_ = 0.0f;
 
 	// カメラを操作できるモードにして、最初の位置に戻す
 	Camera* camera_ = SceneManager::GetInstance().GetCamera();
@@ -156,6 +159,9 @@ void GameScene::Update(void)
 	// プレイヤー更新
 	player_->Update();
 
+	// 走っている間の音
+	UpdateRunNoise();
+
 	// アイテムの更新(スロットの選択、左クリックでの攻撃)
 	itemManager_.Update();
 
@@ -169,9 +175,12 @@ void GameScene::Update(void)
 		itemManager_.GetCleanReach());
 	GameResult::AddMoney(reward_);
 
-	// 汚れを消したら、使ったアイテムの耐久力を減らす
+	// 汚れを消したら、音を出して、使ったアイテムの耐久力を減らす
 	if (reward_ > 0)
 	{
+		NoiseManager::Emit(
+			SceneManager::GetInstance().GetCamera()->GetPos(),
+			NoiseManager::CLEAN_BASE_RADIUS * itemManager_.GetCleanVolume());
 		itemManager_.ConsumeCleanDurability();
 	}
 
@@ -538,4 +547,37 @@ void GameScene::DrawGoalGauge(void)
 		left_, top_,
 		left_ + static_cast<int>(GAUGE_W * rate_), top_ + GAUGE_H,
 		GAUGE_COLOR, TRUE);
+}
+
+void GameScene::UpdateRunNoise(void)
+{
+	InputManager& input_ = InputManager::GetInstance();
+
+	// 走っているか(左Shiftと、移動キーのどれかを押している)
+	bool isMoveKey_ = false;
+	for (int key_ : MOVE_KEYS)
+	{
+		if (input_.IsNew(key_))
+		{
+			isMoveKey_ = true;
+		}
+	}
+	bool isRun_ = input_.IsNew(RUN_KEY) && isMoveKey_;
+
+	// 走っていないときは、次に走ったとき、すぐに音が出るようにする
+	if (!isRun_)
+	{
+		runNoiseTimer_ = 0.0f;
+		return;
+	}
+
+	// 一定の間隔で、音を出す
+	runNoiseTimer_ -= SceneManager::GetInstance().GetDeltaTime();
+	if (runNoiseTimer_ <= 0.0f)
+	{
+		NoiseManager::Emit(
+			SceneManager::GetInstance().GetCamera()->GetPos(),
+			NoiseManager::RUN_RADIUS);
+		runNoiseTimer_ = NoiseManager::RUN_INTERVAL;
+	}
 }
